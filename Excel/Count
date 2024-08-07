@@ -18,12 +18,14 @@ for i in range(1, l):
                         amount[each] += 1
                     else:
                         amount[each] = 1
-                
 
+numbers = list(amount.keys())
 
-print(amount)
-
-
+for i in range(1, len(numbers)):
+     ws = wb.create_sheet(numbers[i])
+     wb.save('Выгрузка задачи Битрикс.xlsx')
+           
+print(numbers)
 
 
 
