@@ -18,13 +18,17 @@ for i in range(1, l):
                         amount[each] += 1
                     else:
                         amount[each] = 1
-                
+
+names = list(amount.keys())
+
+for i in range(1, len(names)):
+     names[i] = names[i][5:]
+  
+
+for i in range(1, len(names)):
+    ws = wb.create_sheet(names[i])
 
 
-print(amount)
-
-
-
-
-
+wb.save('Выгрузка задачи Битрикс edited.xlsx')
+wb.close()  
 
