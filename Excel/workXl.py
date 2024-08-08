@@ -56,22 +56,19 @@ for i in range(len(names)):
 
 wb2.close()
 
-
+wb1.create_sheet('Мусорка')
 
 first = True
-for i, el in enumerate(ws1["F"]): # Не работает
+for i, el in enumerate(ws1["F"]):
     if first:
         first = False
         continue
     knots = el.value.split('; ')
-    # print(knots)
-    # print(tips)
     for each in knots:
         if each in tips.keys():
             for byros in tips[each]:
                 wb1[byros[5:]].append([cell.value for cell in ws1[i+1]])
         else:
-            pass
-        # print(ws1[i+1])
+            wb1['Мусорка'].append([cell.value for cell in ws1[i+1]])
 wb1.save('./ii.xlsx')
 wb1.close()
