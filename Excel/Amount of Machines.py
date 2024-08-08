@@ -20,4 +20,5 @@ for i in range(2, sheet.max_row):
 
 print(len(unique_machines))
 
+wb.save('Отчет по ПЭ от 02.08.2024.xlsx')
 wb.close()
