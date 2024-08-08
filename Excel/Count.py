@@ -21,11 +21,11 @@ for i in range(1, l):
 
 names = list(amount.keys())
 
-for i in range(1, len(names)):
+for i in range(0, len(names)):
      names[i] = names[i][5:]
   
 
-for i in range(1, len(names)):
+for i in range(0, len(names)):
     ws = wb.create_sheet(names[i])
 
 
