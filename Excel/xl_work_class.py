@@ -5,6 +5,7 @@ from xls2xlsx import XLS2XLSX
 class Xl_work:
     def __init__(self, web_src: str, bit_src: str) -> None:
         self.paths = [web_src, bit_src]
+        self.pathDone = './hh.xlsx'
     
     def __make_link_files(self) -> dict:
         try:
@@ -27,7 +28,7 @@ class Xl_work:
             x2x = XLS2XLSX(self.paths[1])
             wb_bit = x2x.to_xlsx()
         except:
-            wb_bit = oxl.load_workbook(filename=self.paths[0])
+            wb_bit = oxl.load_workbook(filename=self.paths[1])
         try:
             x2x = XLS2XLSX(self.paths[0])
             wb_web = x2x.to_xlsx()
@@ -45,18 +46,17 @@ class Xl_work:
                         continue
                     else: wb_web.create_sheet(each)
         wb_web.create_sheet('Мусорка')
-        wb_web.save()
+        wb_web.save(self.pathDone)
         wb_web.close()
         wb_bit.close()
     
-    def __spread_on_sheets(self) -> None:
+    def __spread_on_sheets(self, links: dict) -> None:
         try:
             x2x = XLS2XLSX(self.paths[0])
             wb_web = x2x.to_xlsx()
         except:
             wb_web = oxl.load_workbook(filename=self.paths[0])
         ws_web = wb_web.active
-        tips = self.__make_link_files()
         first = True
         for i, el in enumerate(ws_web["F"]):
             if first:
@@ -64,14 +64,14 @@ class Xl_work:
                 continue
             knots = el.value.split('; ')
             for each in knots:
-                if each in tips.keys():
-                    for byros in tips[each]:
+                if each in links.keys():
+                    for byros in links[each]:
                         wb_web[byros[5:]].append([cell.value for cell in ws_web[i+1]])
                 else:
                     wb_web['Мусорка'].append([cell.value for cell in ws_web[i+1]])
-        wb_web.save('./ii.xlsx')
+        wb_web.save(self.pathDone)
         wb_web.close()
     
     def start(self) -> None:
         self.__create_sheets()
-        self.__spread_on_sheets()
+        self.__spread_on_sheets(self.__make_link_files())
