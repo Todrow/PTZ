@@ -30,20 +30,22 @@ class ExcelWrapper: #
                 if self.ws.cell(row=index, column=indexColumn).value is None or self.ws.cell(row=index, column=indexColumn).value == '':
                     self.ws.cell(row=index, column=indexColumn).value = self.ws.cell(row=index-1, column=indexColumn).value
 
-    def __formatTitles(self) -> None: # Форматирование заголовков
+    def formatTitles(self, ws, do_add: True) -> None: # Форматирование заголовков
+        if do_add:
+            ws.insert_rows(0)
         names = ["Модель трактора", "№ трактора", "Граничная дата гарантии", "Продолжительность контроля, м/ч", "Наработка, м/ч", "Опытный узел", "Дата и время обращения", "ПЭ: Комментарий", "Дефект выявлен на м/ч", "Разработчик программы ПЭ"]
-        for index, el in enumerate(self.ws[1]):
+        for index, el in enumerate(ws[1]):
             el.font = Font(name="Times New Roman", bold=True, size=12)
             el.value = names[index]
-        self.ws.auto_filter.ref = self.ws.dimensions
+        ws.auto_filter.ref = ws.dimensions
 
-    def __formattingCells(self) -> None: # Форматируем размеры ячеек
-        self.ws.row_dimensions[1].height = 30
+    def formattingCells(self, ws) -> None: # Форматируем размеры ячеек
+        ws.row_dimensions[1].height = 30
         widths = {'A': 17.554, 'B': 16.332, 'C': 19.109, 'D': 23.109, 'E': 12.886, 'F': 53.441, 'G': 18.664, 'H': 105.441, 'I': 20.332, 'J': 25.441}
-        for row in self.ws.rows:
+        for row in ws.rows:
             for cell in row:
                 if cell.column_letter in widths.keys():
-                    self.ws.column_dimensions[cell.column_letter].width = widths[cell.column_letter]
+                    ws.column_dimensions[cell.column_letter].width = widths[cell.column_letter]
                     if cell.column_letter not in ['F', 'H', 'J'] or cell.row == 1:
                         cell.alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
                     else:

@@ -8,10 +8,10 @@ class Xl_work:
     
     def __make_link_files(self) -> dict:
         try:
-            x2x = XLS2XLSX(self.Paths[1])
+            x2x = XLS2XLSX(self.paths[1])
             wb = x2x.to_xlsx()
         except:
-            wb = oxl.load_workbook(filename=self.Paths[1])
+            wb = oxl.load_workbook(filename=self.paths[1])
         
         names = {}
         ws = wb.active
@@ -24,15 +24,15 @@ class Xl_work:
 
     def __create_sheets(self) -> None:
         try:
-            x2x = XLS2XLSX(self.Paths[1])
+            x2x = XLS2XLSX(self.paths[1])
             wb_bit = x2x.to_xlsx()
         except:
-            wb_bit = oxl.load_workbook(filename=self.Paths[1])
+            wb_bit = oxl.load_workbook(filename=self.paths[1])
         try:
-            x2x = XLS2XLSX(self.Paths[0])
+            x2x = XLS2XLSX(self.paths[0])
             wb_web = x2x.to_xlsx()
         except:
-            wb_web = oxl.load_workbook(filename=self.Paths[0])
+            wb_web = oxl.load_workbook(filename=self.paths[0])
         ws_web = wb_web.active
         ws_bit = wb_bit.active
         for i in range(1, ws_bit.max_row):
@@ -40,7 +40,7 @@ class Xl_work:
             if task[:2] == 'ПЭ' and ws_bit.cell(column=10, row=i).value != 'Завершена':
                 tags = ws_bit.cell(column=21, row=i).value.split(', ')
                 for each in tags:
-                    each = each[5:]
+                    each = each[5:].capitalize()
                     if each in wb_web.sheetnames:
                         continue
                     else: wb_web.create_sheet(each)
@@ -50,16 +50,10 @@ class Xl_work:
         wb_bit.close()
     
     def __spread_on_sheets(self, links: dict) -> None:
-        try:
-            x2x = XLS2XLSX(self.Paths[0])
-            wb_web = x2x.to_xlsx()
-        except:
-            wb_web = oxl.load_workbook(filename=self.pathDone)
-        try:
-            x2x = XLS2XLSX(self.paths[0])
-            wb_done = x2x.to_xlsx()
-        except:
-            wb_done = oxl.load_workbook(filename=self.pathDone)
+        
+        wb_web = self.open_file(self.paths[0])
+        wb_done = self.open_file(self.pathDone)
+
         ws_web = wb_web.active
         first = True
         for i, el in enumerate(ws_web["F"]):
@@ -78,13 +72,21 @@ class Xl_work:
                                 continue
                             else:
                                 our_row.append(cell.value)
-                        wb_done[byros[5:]].append(our_row)
+                        wb_done[byros[5:].capitalize()].append(our_row)
                 else:
                     wb_done['Мусорка'].append([cell.value for cell in ws_web[i+1]])
         wb_done.save(self.pathDone)
         wb_done.close()
         wb_web.close()
     
+    def open_file(self, path:str):
+        try:
+            x2x = XLS2XLSX(path)
+            wb = x2x.to_xlsx()
+        except:
+            wb = oxl.load_workbook(filename=path)
+        return wb
+
     def start(self) -> None:
         self.__create_sheets()
         self.__spread_on_sheets(self.__make_link_files())
