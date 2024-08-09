@@ -1,24 +1,29 @@
 import openpyxl
 from xls2xlsx import XLS2XLSX
 
-path = 'Отчет по ПЭ от 02.08.2024.xls'
+path1 = 'Отчет по ПЭ от 02.08.2024.xls'
+path2 = 'Отчет по ПЭ от 02.08.2024.xlsx'
 
-try:
-    x2x = XLS2XLSX(path)
-    wb = x2x.to_xlsx()
-except:
-    wb = openpyxl.load_workbook(filename=path)
-    
+def count_number_of_machines(path_load, path_save):
 
-sheet = wb.active 
+    try:
+        x2x = XLS2XLSX(path_load)
+        wb = x2x.to_xlsx()
+    except:
+        wb = openpyxl.load_workbook(filename=path_load)
+        
 
-unique_machines = []
+    sheet = wb.active 
 
-for i in range(2, sheet.max_row):
-    if (sheet.cell(column=2, row=i).value not in unique_machines):
-        unique_machines.append(sheet.cell(column=2, row=i).value)
+    unique_machines = []
 
-print(len(unique_machines))
+    for i in range(2, sheet.max_row):
+        if (sheet.cell(column=2, row=i).value not in unique_machines):
+            unique_machines.append(sheet.cell(column=2, row=i).value)
 
-wb.save('Отчет по ПЭ от 02.08.2024.xlsx')
-wb.close()
+    print(len(unique_machines))
+
+    wb.save(path_save)
+    wb.close()
+
+count_number_of_machines(path1, path2)
