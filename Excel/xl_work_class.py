@@ -1,11 +1,10 @@
 import openpyxl as oxl
-from openpyxl.styles import Font, Alignment
 from xls2xlsx import XLS2XLSX
 
 class Xl_work:
     def __init__(self, web_src: str, bit_src: str) -> None:
         self.paths = [web_src, bit_src]
-        self.pathDone = './hh.xlsx'
+        self.pathDone = 'C:/Users/pinchukna/Documents/GitHub/PTZ/Excel/done.xlsx'
     
     def __make_link_files(self) -> dict:
         try:
@@ -55,7 +54,12 @@ class Xl_work:
             x2x = XLS2XLSX(self.paths[0])
             wb_web = x2x.to_xlsx()
         except:
-            wb_web = oxl.load_workbook(filename=self.paths[0])
+            wb_web = oxl.load_workbook(filename=self.pathDone)
+        try:
+            x2x = XLS2XLSX(self.paths[0])
+            wb_done = x2x.to_xlsx()
+        except:
+            wb_done = oxl.load_workbook(filename=self.pathDone)
         ws_web = wb_web.active
         first = True
         for i, el in enumerate(ws_web["F"]):
@@ -66,10 +70,19 @@ class Xl_work:
             for each in knots:
                 if each in links.keys():
                     for byros in links[each]:
-                        wb_web[byros[5:]].append([cell.value for cell in ws_web[i+1]])
+                        our_row = []
+                        for j, cell in enumerate(ws_web[i+1]):
+                            if j == 5:
+                                our_row.append(each)
+                            elif j == ws_web.max_column-1:
+                                continue
+                            else:
+                                our_row.append(cell.value)
+                        wb_done[byros[5:]].append(our_row)
                 else:
-                    wb_web['Мусорка'].append([cell.value for cell in ws_web[i+1]])
-        wb_web.save(self.pathDone)
+                    wb_done['Мусорка'].append([cell.value for cell in ws_web[i+1]])
+        wb_done.save(self.pathDone)
+        wb_done.close()
         wb_web.close()
     
     def start(self) -> None:
