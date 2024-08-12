@@ -1,5 +1,0 @@
-xls2xlsx==0.2.0
-openpyxl==3.1.2
-flet==0.21.2
-flet-core==0.21.2
-flet-runtime==0.21.2
