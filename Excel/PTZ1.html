@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="C:\Users\Aleksandr\Documents\Работа\GUI\PTZ1\PTZ1.css">
+        <title>Обработка данных</title>
+    </head>
+    
+    <body>
+        <div class="card">
+            <h1>Загрузите файлы</h1>
+            <form method="post" enctype="multipart/form-data" id="myForm">
+                <label class="input-file">
+                        <span class="input-file-text" type="text" id="fileName1"></span>
+                        <input type="file" name="file" id="fileInput1">        
+                        <span class="input-file-btn">Битрикс</span>
+                </label>
+                <label class="input-file">
+                    <span class="input-file-text" type="text" id="fileName2"></span>
+                    <input type="file" name="file" id="fileInput2">        
+                    <span class="input-file-btn">Веб система</span>
+                </label>
+                <input class="btn" type="submit" value="Сохранить" onclick="showPopup()"></input>
+            </form>  
+        </div>
+        <div id="popup-overlay"> 
+            <div id="popup">
+                <h2 class="message-header">Данные отправлены на сервер</h2>
+                <p class="message-main">По окончании обработки итоговый файл будет загружен на компьютер</p>
+                <button id="ok_btn">Покинуть</button>
+            </div>
+        </div>
+        <script src="C:\Users\Aleksandr\Documents\Работа\GUI\PTZ1\PTZ1.js"></script>
+    </body>
+</html>
