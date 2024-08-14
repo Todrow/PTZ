@@ -22,8 +22,8 @@ body {
 .btn {
     background-color:#ce2a2e; 
     position: relative;
-    left: 235px;
-    bottom: -10px;
+    left: 60%;
+    bottom: 1%;
     color: white; 
     border:  1px solid #e5e5e5; 
     height: 50px;
@@ -35,7 +35,7 @@ body {
     box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, color 0.3s; 
     font-family:Arial, Helvetica, sans-serif;
-    font-size: 18;
+    font-size: 18px;
     font-weight:bold; 
 }
 .btn:hover {
@@ -81,7 +81,7 @@ body {
     cursor: pointer;
     outline: none;
     text-decoration: none;
-    font-size: 13;
+    font-size: 13px;
     font-weight:bold;
     font-family: Arial, Helvetica, sans-serif;
     vertical-align: middle;
@@ -172,7 +172,7 @@ img {
     background-color:#ce2a2e; 
     position: relative;
     color: white; 
-    left: 77%;
+    left: 80%;
     bottom: 10%;
     border:  1px solid #e5e5e5; 
     height: 35px;
@@ -184,7 +184,7 @@ img {
     box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, color 0.3s; 
     font-family:Arial, Helvetica, sans-serif;
-    font-size: 14;
+    font-size: 14px;
     font-weight:bold; 
     text-align: center;  
     align-items: center; 
