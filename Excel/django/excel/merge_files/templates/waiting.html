@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+
+{% block popup %}
+<div id="popup-overlay"> 
+    <div id="popup">
+        <h2 class="message-header">Обработка завершена</h2>
+        <p class="message-main">Итоговый файл можно будет загрузить по окнчании обработки</p>
+        <div class="loader" id="loader"></div>
+        <div style="justify-self: center;">
+            <button id="exit_button" class="ok_btn" style="right: 73%">Отмена</button>
+            <a id="ok_btn" class="ok_btn" disabled style="left: 73%">Скачать</a>
+        </div>
+    </div>
+</div>
+{% endblock popup %}

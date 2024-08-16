@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static "PTZ1.css" %}">
+        <title>Обработка данных</title>
+        <script>
+            function done(nn){
+                document.getElementById("loader").style.display="none";
+                document.getElementById("exit_button").style.display="none";
+                document.getElementById("message-main").textContent = ''
+                document.getElementById("message-header").textContent = 'Отчёт готов к загрузке';
+                document.getElementById("ok_btn").style.display = 'block';
+            }
+            function submitForm(event) {
+                event.preventDefault();
+                document.getElementById("popup-overlay").style.display = "block";
+                fetch('/merge_files/', {
+                    method: 'POST',
+                    body: new FormData(document.getElementById("myForm")),
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                    },
+                }).then(response => response.json()).then(result => done(result));
+            }
+        </script>
+    </head>
+    
+    <body>
+        <div class="card">
+            <h1>Загрузите файлы</h1>
+            <form method="POST" enctype="multipart/form-data" id="myForm">
+                {% csrf_token %}
+                <label class="input-file">
+                        <span class="input-file-text" type="text" id="fileName1"></span>
+                        <input type="file" name="file_bitrix" id="fileInput1">        
+                        <span class="input-file-btn">Битрикс</span>
+                </label>
+                <label class="input-file">
+                    <span class="input-file-text" type="text" id="fileName2"></span>
+                    <input type="file" name="file_web" id="fileInput2">        
+                    <span class="input-file-btn">Веб система</span>
+                </label>
+                <input class="btn" type="submit" value="Сохранить" id="send"></input>
+            </form>  
+        </div>
+        <div id="popup-overlay"> 
+            <div id="popup">
+                <h2 class="message-header" id="message-header">Данные отправлены на сервер</h2>
+                <p class="message-main" id="message-main">Отчёт можно будет загрузить по окончании обработки</p>
+                <div class="loader" id="loader"></div>
+                <div style="justify-self: center;">
+                    <button id="exit_button" class="ok_btn" style="right: 0%">Отмена</button>
+                    <a id="ok_btn" class="ok_btn" style="left: 0%; display: none" href='download'>Скачать</a>
+                </div>
+            </div>
+        </div>
+        <script src="{% static "PTZ1.js" %}"></script>
+    </body>
+</html>
