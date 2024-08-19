@@ -1,16 +1,63 @@
 import openpyxl as oxl
 from xls2xlsx import XLS2XLSX
-from openpyxl.styles import Font, Alignment, colors, Color
+from openpyxl.styles import Font, Alignment, colors, Color, Border, Side
 from openpyxl.chart import PieChart, Reference, Series
 from openpyxl.chart.label import DataLabelList 
 from openpyxl.chart.layout import Layout, ManualLayout
 from openpyxl.chart.shapes import GraphicalProperties
+import os
+import logging
+
+logging.basicConfig(level=logging.INFO, filename="prog_log.log",filemode="w", format="%(asctime)s %(levelname)s %(message)s")
 
 class Xl_work:
-    def __init__(self, web_src: str, bit_src: str, done_src: str) -> None:
+    def __init__(self, web_src: str, bit_src: str) -> None:
         self.paths = [web_src, bit_src]
-        self.pathDone = done_src
+        self.pathDone = r'C:\Users\Aleksandr\Documents\Work\Excel\Report.xlsx'
     
+    def __check_format(self)->bool:
+        valid_extension = ('.xlsx', '.xls')
+        file1 = self.paths[0]
+        file2 = self.paths[1]
+
+        if not (file1.lower().endswith(valid_extension) and file2.lower().endswith(valid_extension)):
+            return False
+    
+        return True
+
+    def __correct_file_B(self)->bool:
+        try:
+            x2x = XLS2XLSX(self.paths[1])
+            wb = x2x.to_xlsx()
+        except:
+            wb = oxl.load_workbook(filename=self.paths[1])
+
+        sheet = wb.active
+        if sheet.cell(row=1, column=2).value == 'Название':
+            wb.close()
+            print('ok')
+            return True
+        else:
+            wb.close()
+            return False
+        
+        
+    def __correct_file_W(self)->bool:
+        try:
+            x2x = XLS2XLSX(self.paths[0])
+            wb = x2x.to_xlsx()
+        except:
+            wb = oxl.load_workbook(filename=self.paths[0])
+
+        sheet = wb.active
+        if sheet.cell(row=1, column=6).value == 'Опытный узел':
+            wb.close()
+            print('ok')
+            return True
+        else:
+            wb.close()
+            return False
+
     def __make_link_files(self) -> dict:
         try:
             x2x = XLS2XLSX(self.paths[1])
@@ -26,13 +73,14 @@ class Xl_work:
                 names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
         wb.close()
         return names
-
+        
     def __create_sheets(self) -> None:
         wb_bit = self.open_file(self.paths[1])
         wb_web = self.open_file(self.paths[0])
         
         ws_web = wb_web.active
         ws_bit = wb_bit.active
+
         for i in range(1, ws_bit.max_row):
             task = ws_bit.cell(column=2, row=i).value
             if task[:2] == 'ПЭ' and ws_bit.cell(column=10, row=i).value != 'Завершена':
@@ -42,7 +90,7 @@ class Xl_work:
                     if each in wb_web.sheetnames:
                         continue
                     else: wb_web.create_sheet(each)
-        wb_web.create_sheet('Конфликты')
+        wb_web.create_sheet('Мусорка')
         wb_web.save(self.pathDone)
         wb_web.close()
         wb_bit.close()
@@ -68,7 +116,6 @@ class Xl_work:
         return amount
 
     def __spread_on_sheets(self, links: dict) -> None:
-        
         wb_web = self.open_file(self.paths[0])
         wb_done = self.open_file(self.pathDone)
 
@@ -92,17 +139,12 @@ class Xl_work:
                                 our_row.append(cell.value)
                         wb_done[byros[5:].capitalize()].append(our_row)
                 else:
-                    our_row = []
-                    for j, cell in enumerate(ws_web[i+1]):
-                        if j == 5:
-                            our_row.append(each)
-                        else:
-                            our_row.append(cell.value)
-                    wb_done['Конфликты'].append(our_row)
+                    wb_done['Мусорка'].append([cell.value for cell in ws_web[i+1]])
         wb_done.save(self.pathDone)
         wb_done.close()
         wb_web.close()
-        
+    
+            
     def __count_number_of_machines(self, path)->int:
         wb = self.open_file(path)     
 
@@ -139,6 +181,9 @@ class Xl_work:
             sheet[f'A{row_index}'] = key
             sheet[f'B{row_index}'] = value
 
+        thin = Side(border_style="thin", color="000000")
+        border = Border(top=thin, left=thin, right=thin, bottom=thin)
+
         dll = DataLabelList(showVal=True)
         chart = PieChart()
         labels = Reference(sheet, min_col=1, min_row=3, max_row=sheet.max_row, max_col=1)
@@ -149,17 +194,14 @@ class Xl_work:
         chart.dataLabels.showVal = True
         chart.width = 20
         chart.height = 10
-        chart.graphical_properties = GraphicalProperties()
-        chart.graphical_properties.noFill = True
-        chart.graphical_properties.line.prstDash = None
-        chart.legend.layout = Layout(
-                manualLayout=ManualLayout(
-                yMode='edge',
-                xMode='edge',
-                x=0, y=1,
-                h=0, w=0
-            )
-        )
+        chart.dataLabels = DataLabelList()
+        chart.dataLabels.showVal = True
+        chart.dataLabels.showCatName = True
+        chart.dataLabels.showPercentage = False
+        data_label_font = Font(size=14)
+        chart.dataLabels.font = data_label_font
+        chart.legend = None
+
 
         
         sheet.add_chart(chart, 'D5')
@@ -177,6 +219,14 @@ class Xl_work:
         return wb
 
     def start(self) -> None:
-        self.__create_sheets()
-        self.__spread_on_sheets(self.__make_link_files())
-        self.__stat()
+        if self.__check_format() == False:
+            logging.critical('Unexpected file extention',exc_info=True)
+        elif self.__correct_file_B() == False:
+            logging.critical('Unexpected Bitrix file structure',exc_info=True)
+        elif self.__correct_file_W() == False:
+            logging.critical('Unexpected Web-sys file structure',exc_info=True)
+        else:
+            self.__create_sheets()
+            self.__spread_on_sheets(self.__make_link_files())
+            self.__stat()
+            logging.info('Program completed successfully',exc_info=True)
