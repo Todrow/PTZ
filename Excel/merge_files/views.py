@@ -2,7 +2,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, FileResponse, JsonResponse
 from django.core.files.storage import FileSystemStorage
-from .models import XL_file
 
 # Python Libs
 import os
@@ -22,27 +21,24 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str):
     wb.save(path_done)
     wb.close()
 
-
+path_done = 'c:/Users/pinchukna/Documents/GitHub/PTZ/Excel/django/excel/done.xlsx'
 def index(request):
-    path_done = 'c:/Users/pinchukna/Documents/GitHub/PTZ/Excel/django/excel/done.xlsx'
+    global path_done
+    try:
+        os.remove(path_done)
+    except:
+        pass
     if request.method == 'POST' and request.FILES:
         file1 = request.FILES['file_bitrix']
-        # fs = FileSystemStorage()
-        # # filename = fs.save(file1.name, file1)
-        # # file_bitrix_url = os.path.abspath(fs.url(filename))
-        # ###
+        ####
         file2 = request.FILES['file_web']
-        # fs = FileSystemStorage()
-        # # filename = fs.save(file2.name, file2)
-        # # file_web_url = os.path.abspath(fs.url(filename))
         merge_files(file1, file2, path_done)
         return JsonResponse({"resp": str(request.FILES)})
     else:
         return render(request, 'index.html')
-    # return render(request, 'index.html', context={'jj': str('NOGET')})
 
 def download_file(request):
-    path_done = 'c:/Users/pinchukna/Documents/GitHub/PTZ/Excel/django/excel/done.xlsx'
+    global path_done
     with open(path_done, 'rb') as file:
         response = HttpResponse(file.read())
         response['Content-Disposition'] = 'attachment; filename=' + 'path_done.xlsx'
