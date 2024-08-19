@@ -18,6 +18,7 @@ body {
     display: grid;
     grid-template-rows: 1fr; 
     border: 2px solid #e5e5e5;
+    transform: scale(1.25);
 }
 .btn {
     background-color:#ce2a2e; 
@@ -174,7 +175,7 @@ img {
     text-align: center;
 }
 
-#ok_btn {
+.ok_btn {
     background-color:#ce2a2e; 
     position: relative;
     color: white; 
@@ -196,15 +197,15 @@ img {
     align-items: center; 
 }
 
-#ok_btn:hover {
+.ok_btn:hover {
     background-color: #e6e6e6; 
     color: black; 
 }
-#ok_btn:active {
+.ok_btn:active {
     background-color: #c1c0c0;
 }
 
-#ok_btn:disabled {
+.ok_btn:disabled {
     background-color: #e6e6e6;
     color:#c1c0c0;
 }

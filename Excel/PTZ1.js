@@ -43,3 +43,9 @@ function handleClick() {
 }
 
 document.getElementById("ok_btn").addEventListener("click", handleClick);
+
+function handleClickExit() {
+    location.reload()
+}
+
+document.getElementById("exit_button").addEventListener("click", handleClickExit);
