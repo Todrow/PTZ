@@ -28,17 +28,8 @@ class Xl_work:
         return names
 
     def __create_sheets(self) -> None:
-        try:
-            x2x = XLS2XLSX(self.paths[1])
-            wb_bit = x2x.to_xlsx()
-        except:
-            wb_bit = oxl.load_workbook(filename=self.paths[1])
-        try:
-            x2x = XLS2XLSX(self.paths[0])
-            wb_web = x2x.to_xlsx()
-        except:
-            wb_web = oxl.load_workbook(filename=self.paths[0])
-
+        wb_bit = self.open_file(self.paths[1])
+        wb_web = self.open_file(self.paths[0])
         
         ws_web = wb_web.active
         ws_bit = wb_bit.active
@@ -113,13 +104,7 @@ class Xl_work:
         wb_web.close()
         
     def __count_number_of_machines(self, path)->int:
-
-        try:
-            x2x = XLS2XLSX(path)
-            wb = x2x.to_xlsx()
-        except:
-            wb = oxl.load_workbook(filename=path)
-            
+        wb = self.open_file(path)     
 
         sheet = wb.active 
 
@@ -186,7 +171,8 @@ class Xl_work:
         try:
             x2x = XLS2XLSX(path)
             wb = x2x.to_xlsx()
-        except:
+        except Exception as e:
+            print(e)
             wb = oxl.load_workbook(filename=path)
         return wb
 

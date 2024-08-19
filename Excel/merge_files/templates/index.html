@@ -21,7 +21,7 @@
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
                     },
-                }).then(response => response.json()).then(result => done(result));
+                }).then(response => console.log(response.json())).then(result => done(result));
             }
         </script>
     </head>
