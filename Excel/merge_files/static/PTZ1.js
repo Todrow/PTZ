@@ -4,6 +4,7 @@ const fileInput2 = document.getElementById('fileInput2');
 const fileName2 = document.getElementById('fileName2');
 const myForm = document.getElementById("myForm");
 const okButton = document.getElementById("ok_btn");
+const extButton = document.getElementById("exit_button");
 
 fileInput1.addEventListener('change', function () {
     // Проверяем, есть ли выбранные файлы
@@ -35,6 +36,12 @@ function handleClick() {
     document.getElementById("popup-overlay").style.display = "none";
 }
 
+function handleClickExit() {
+    location.reload();
+}
+
 myForm.addEventListener("submit", submitForm);
 
 okButton.addEventListener("click", handleClick);
+
+extButton.addEventListener("click", handleClickExit);
