@@ -34,12 +34,12 @@
                 {% csrf_token %}
                 <label class="input-file">
                         <span class="input-file-text" type="text" id="fileName1"></span>
-                        <input type="file" name="file_bitrix" id="fileInput1">        
+                        <input type="file" name="file_bitrix" id="fileInput1" required>
                         <span class="input-file-btn">Битрикс</span>
                 </label>
                 <label class="input-file">
                     <span class="input-file-text" type="text" id="fileName2"></span>
-                    <input type="file" name="file_web" id="fileInput2">        
+                    <input type="file" name="file_web" id="fileInput2" required>        
                     <span class="input-file-btn">Веб система</span>
                 </label>
                 <input class="btn" type="submit" value="Сохранить" id="send"></input>
