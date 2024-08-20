@@ -30,7 +30,17 @@ class ExcelWrapper: #
                 if self.ws.cell(row=index, column=indexColumn).value is None or self.ws.cell(row=index, column=indexColumn).value == '':
                     self.ws.cell(row=index, column=indexColumn).value = self.ws.cell(row=index-1, column=indexColumn).value
 
-    def formatTitles(self, ws, do_add: True) -> None: # Форматирование заголовков
+    def formatTitles(self, ws, do_add: True) -> None:
+        """ Форматирует названия столбцов:
+        задает им ширину, выравнивание, шрифт и его начертание
+
+        :param ws: рабочий лист Excel
+
+        :param do_add: сообщает о необходимости добавлять шапку
+        :type do_add: bool
+
+        :rtype: None
+        """
         if do_add:
             ws.insert_rows(0)
         names = ["Модель трактора", "№ трактора", "Граничная дата гарантии", "Продолжительность контроля, м/ч", "Наработка, м/ч", "Опытный узел", "Дата и время обращения", "ПЭ: Комментарий", "Дефект выявлен на м/ч", "Разработчик программы ПЭ"]
@@ -39,7 +49,14 @@ class ExcelWrapper: #
             el.value = names[index]
         ws.auto_filter.ref = ws.dimensions
 
-    def formattingCells(self, ws) -> None: # Форматируем размеры ячеек
+    def formattingCells(self, ws) -> None: 
+        """Форматирует ячейки таблицы:
+        задает ширину колонок и выравнивание текста
+
+        :param ws:рабочий лист Excel
+
+        :rtype: None        
+        """
         ws.row_dimensions[1].height = 30
         widths = {'A': 17.554, 'B': 16.332, 'C': 19.109, 'D': 23.109, 'E': 12.886, 'F': 53.441, 'G': 18.664, 'H': 105.441, 'I': 20.332, 'J': 25.441}
         for row in ws.rows:
