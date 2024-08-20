@@ -21,7 +21,7 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str):
     wb.save(path_done)
     wb.close()
 
-path_done = 'c:/Users/pinchukna/Documents/GitHub/PTZ/Excel/done.xlsx'
+path_done = os.path.abspath('./uploads/'+'done.xlsx')
 def index(request):
     global path_done
     try:

@@ -7,7 +7,6 @@
         <script>
             function done(nn){
                 document.getElementById("loader").style.display="none";
-                document.getElementById("exit_button").style.display="none";
                 document.getElementById("message-main").textContent = ''
                 document.getElementById("message-header").textContent = 'Отчёт готов к загрузке';
                 document.getElementById("ok_btn").style.display = 'block';
@@ -50,8 +49,8 @@
                 <p class="message-main" id="message-main">Отчёт можно будет загрузить по окончании обработки</p>
                 <div class="loader" id="loader"></div>
                 <div style="justify-self: center;">
-                    <button id="exit_button" class="ok_btn" style="right: 0%">Отмена</button>
-                    <a id="ok_btn" class="ok_btn" style="left: 0%; display: none; justify-content: center; align-content: center;" href='download'>Скачать</a>
+                    {% comment %} <button id="exit_button" class="ok_btn" style="right: 0%; justify-content: center; align-content: center;">Отмена</button> {% endcomment %}
+                    <a id="ok_btn" class="ok_btn" style="left: 0%; display: none;" href='download'>Скачать</a>
                 </div>
             </div>
         </div>

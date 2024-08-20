@@ -11,19 +11,9 @@ import logging
 logging.basicConfig(level=logging.INFO, filename="prog_log.log",filemode="w", format="%(asctime)s %(levelname)s %(message)s")
 
 class Xl_work:
-    def __init__(self, web_src: str, bit_src: str) -> None:
+    def __init__(self, web_src: str, bit_src: str, done_src: str) -> None:
         self.paths = [web_src, bit_src]
-        self.pathDone = r'C:\Users\Aleksandr\Documents\Work\Excel\Report.xlsx'
-    
-    def __check_format(self)->bool:
-        valid_extension = ('.xlsx', '.xls')
-        file1 = self.paths[0]
-        file2 = self.paths[1]
-
-        if not (file1.lower().endswith(valid_extension) and file2.lower().endswith(valid_extension)):
-            return False
-    
-        return True
+        self.pathDone = done_src
 
     def __correct_file_B(self)->bool:
         try:
@@ -219,9 +209,7 @@ class Xl_work:
         return wb
 
     def start(self) -> None:
-        if self.__check_format() == False:
-            logging.critical('Unexpected file extention',exc_info=True)
-        elif self.__correct_file_B() == False:
+        if self.__correct_file_B() == False:
             logging.critical('Unexpected Bitrix file structure',exc_info=True)
         elif self.__correct_file_W() == False:
             logging.critical('Unexpected Web-sys file structure',exc_info=True)
