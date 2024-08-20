@@ -168,10 +168,12 @@ img {
     justify-content: center;
     display: inline;
     align-items: center;
-    display: grid;
+    display: flex;
     grid-template-rows: 1fr;
     height: 400px;
     width: 500px;
+    align-content: space-around;
+    flex-direction: column;
 }
 
 .message-main {
