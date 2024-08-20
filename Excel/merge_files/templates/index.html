@@ -3,13 +3,13 @@
     <head>
         {% load static %}
         <link rel="stylesheet" href="{% static "PTZ1.css" %}">
-        <link rel="shortcut icon" href="13452_0_.jpg">
+        <link rel="shortcut icon" href="{% static "13452_0_.jpg" %}">
         <title>Обработка данных</title>
         <script>
             function done(nn){
                 document.getElementById("loader").style.display="none";
                 document.getElementById("message-main").textContent = ''
-                document.getElementById("message-header").textContent = 'Отчёт готов к загрузке';
+                document.getElementById("message-header").textContent = 'Отчёт готов к скачиванию';
                 document.getElementById("ok_btn").style.display = 'block';
             }
             function submitForm(event) {
@@ -50,7 +50,6 @@
                 <p class="message-main" id="message-main">Отчёт можно будет загрузить по окончании обработки</p>
                 <div class="loader" id="loader"></div>
                 <div style="justify-self: center;">
-                    {% comment %} <button id="exit_button" class="ok_btn" style="right: 0%; justify-content: center; align-content: center;">Отмена</button> {% endcomment %}
                     <a id="ok_btn" class="ok_btn" style="left: 0%; display: none;" href='download'>Скачать</a>
                 </div>
             </div>
