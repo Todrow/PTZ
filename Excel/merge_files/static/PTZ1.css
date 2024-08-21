@@ -170,7 +170,7 @@ img {
     align-items: center;
     display: flex;
     grid-template-rows: 1fr;
-    height: 400px;
+    height: 300px;
     width: 500px;
     align-content: space-around;
     flex-direction: column;

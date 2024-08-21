@@ -21,11 +21,15 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str):
     wb.save(path_done)
     wb.close()
 
-path_done = os.path.abspath('./uploads/'+'done.xlsx')
+path_done = os.path.abspath('./uploads/')+'/'
 def index(request):
     global path_done
     try:
-        os.remove(path_done)
+        import time
+        for filename in os.listdir(path_done):
+            f = os.path.join(path_done, filename)
+            if time.time() - os.path.getctime(f) > 300:
+                os.remove(f)
     except:
         pass
     if request.method == 'POST' and request.FILES:
@@ -41,7 +45,7 @@ def index(request):
             fs.save(file2.name, file2)
             file2 = os.path.abspath('./uploads/'+file2.name)
         ####
-        merge_files(file1, file2, path_done)
+        merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
         ####
         try:
             os.remove(file1)
@@ -51,14 +55,14 @@ def index(request):
             os.remove(file2)
         except:
             pass
-        return JsonResponse({"resp": str(file1.name)})
+        return JsonResponse({"id": str(request.META['HTTP_ID'])})
     else:
         return render(request, 'index.html')
 
-def download_file(request):
+def download_file(request, id):
     global path_done
-    with open(path_done, 'rb') as file:
+    with open(path_done+id+'.xlsx', 'rb') as file:
         response = HttpResponse(file.read())
         response['Content-Disposition'] = 'attachment; filename=' + 'finished_report.xlsx'
-    os.remove(path_done)
+    os.remove(path_done+id+'.xlsx')
     return response

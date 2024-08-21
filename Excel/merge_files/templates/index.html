@@ -6,7 +6,8 @@
         <link rel="shortcut icon" href="{% static "13452_0_.jpg" %}">
         <title>Обработка данных</title>
         <script>
-            function done(_){
+            function done(result){
+                document.getElementById('ok_btn').href="download/"+result.id
                 document.getElementById("loader").style.display="none";
                 document.getElementById("message-main").textContent = ''
                 document.getElementById("message-header").textContent = 'Отчёт готов к скачиванию';
@@ -21,8 +22,9 @@
                     body: new FormData(document.getElementById("myForm")),
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
+                        'id': generateUUID(),
                     },
-                }).then(response => console.log(response.json())).then(result => done(result));
+                }).then((data) => data.json()).then((data) => done(data));
             }
         </script>
     </head>
