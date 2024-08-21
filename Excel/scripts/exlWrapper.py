@@ -11,14 +11,22 @@ def find_all(a_str, sub): # Все вхождения подстроки в ст
         start += len(sub)
 
 class ExcelWrapper: # 
-    def __init__(self) -> None:   
-        pass
+    def __init__(self, deleteList: list, blackList: list, path: str) -> None:   
+        try:
+            x2x = XLS2XLSX(path)
+            self.wb = x2x.to_xlsx()
+        except:
+            self.wb = oxl.load_workbook(filename=path)
+        self.DELETE_LIST = deleteList
+        self.ws = self.wb.active
+        self.BLACK_LIST = blackList
+        self.path = path
 
     def __deleteColumns(self, blackList: list) -> None: # Удаление из blackList
-        title = list(self.ws.values)[0]
+        title = self.ws[1]
         del_i = 1
         for index, name in enumerate(title):
-            if name in blackList:
+            if name.value in blackList:
                 self.ws.delete_cols(index+del_i, 1)
                 del_i -= 1
 
@@ -30,7 +38,7 @@ class ExcelWrapper: #
                 if self.ws.cell(row=index, column=indexColumn).value is None or self.ws.cell(row=index, column=indexColumn).value == '':
                     self.ws.cell(row=index, column=indexColumn).value = self.ws.cell(row=index-1, column=indexColumn).value
 
-    def formatTitles(self, ws, do_add: True) -> None:
+    def formatTitles(self, ws, do_add: bool) -> None:
         """ Форматирует названия столбцов:
         задает им ширину, выравнивание, шрифт и его начертание
 
@@ -75,16 +83,6 @@ class ExcelWrapper: #
                             if each+2 < len(cell.value):
                                 cell.value = cell.value[:each+2] + '\n' + cell.value[each+2:]
                                 ad += 1
-
-    def feed(self, deleteList: list, blackList: list, path: str) -> None:
-        try:
-            x2x = XLS2XLSX(path)
-            self.wb = x2x.to_xlsx()
-        except:
-            self.wb = oxl.load_workbook(filename=path)
-        self.DELETE_LIST = deleteList
-        self.ws = self.wb.active
-        self.BLACK_LIST = blackList
     
     def format(self) -> None: # Применяем всё форматирование
         # Удаляем лишнее
@@ -92,9 +90,10 @@ class ExcelWrapper: #
         # Вставляем пропущенное
         self.__pasteValues(self.BLACK_LIST)
         # Форматируем заголовки
-        self.__formatTitles()
+        self.formatTitles(self.ws, False)
         # Форматируем размеры ячеек
-        self.__formattingCells()
+        self.formattingCells(self.ws)
+        self.save(self.path)
 
     def save(self, path: str) -> None: # Сохраняем изменнёный файл
         self.wb.save(path)

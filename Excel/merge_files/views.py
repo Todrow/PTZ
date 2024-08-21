@@ -12,10 +12,11 @@ from scripts.xl_work_class import Xl_work
 
 def merge_files(path_bitrix: str, path_web: str, path_done: str):
     xl = Xl_work(path_web, path_bitrix, path_done)
-    ew = ExcelWrapper()
+    ew = ExcelWrapper(['Вложения', 'Последний раз обновлено', 'Статус', 'Наименование сервисного центра'], ['ПЭ: дата время', 'ПЭ: Комментарий', 'ПЭ: наработка м/ч'], path_web)
+    ew.format()
     xl.start()
     wb = xl.open_file(path_done)
-    for sheet in wb.sheetnames[1:-2]:
+    for sheet in wb.sheetnames[1:-1]:
         ew.formatTitles(wb[sheet], True)
         ew.formattingCells(wb[sheet])
     wb.save(path_done)

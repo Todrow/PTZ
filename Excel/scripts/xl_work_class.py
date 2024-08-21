@@ -23,7 +23,7 @@ class Xl_work:
         :param web_src: путь к Excel файлу выгрузки с веб-системы, defaults to None
         :type web_src: str
 
-        :param bit_src: путь к Excel файлу выгрузки с веб-системы, defaults to None
+        :param bit_src: путь к Excel файлу выгрузки с Битрикс24, defaults to None
         :type bit_src: str
 
         :param done_src: путь к итоговому файлу, defaults to None
@@ -37,11 +37,7 @@ class Xl_work:
         """Проверяет соответсвие столбцов в файле из Битркса исходному шаблону
         :rtype: bool
         """
-        try:
-            x2x = XLS2XLSX(self.paths[1])
-            wb = x2x.to_xlsx()
-        except:
-            wb = oxl.load_workbook(filename=self.paths[1])
+        wb = self.open_file(self.paths[1])
 
         sheet = wb.active
         if sheet.cell(row=1, column=2).value == 'Название':
@@ -56,11 +52,8 @@ class Xl_work:
         """Проверяет соответсвие столбцов в файле из Веб-системы исходному шаблону
         :rtype: bool
         """
-        try:
-            x2x = XLS2XLSX(self.paths[0])
-            wb = x2x.to_xlsx()
-        except:
-            wb = oxl.load_workbook(filename=self.paths[0])
+
+        wb = self.open_file(self.paths[0])
 
         sheet = wb.active
         if sheet.cell(row=1, column=6).value == 'Опытный узел':
@@ -77,18 +70,17 @@ class Xl_work:
         :rtype: dict
         
         """
-        try:
-            x2x = XLS2XLSX(self.paths[1])
-            wb = x2x.to_xlsx()
-        except:
-            wb = oxl.load_workbook(filename=self.paths[1])
+        wb = self.open_file(self.paths[1])
         
         names = {}
         ws = wb.active
 
         for i, el in enumerate(ws["B"]):
             if el.value[:2] == 'ПЭ':
-                names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
+                try:
+                    names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
+                except:
+                    pass
         wb.close()
         return names
         
@@ -104,24 +96,26 @@ class Xl_work:
         
         ws_web = wb_web.active
         ws_bit = wb_bit.active
-
         for i in range(1, ws_bit.max_row):
             task = ws_bit.cell(column=2, row=i).value
             if task[:2] == 'ПЭ' and ws_bit.cell(column=10, row=i).value != 'Завершена':
-                tags = ws_bit.cell(column=21, row=i).value.split(', ')
-                for each in tags:
-                    each = each[5:].capitalize()
-                    if each in wb_web.sheetnames:
-                        continue
-                    else: wb_web.create_sheet(each)
-        wb_web.create_sheet('Мусорка')
+                try:
+                    tags = ws_bit.cell(column=21, row=i).value.split(', ')
+                    for each in tags:
+                        each = each[5:].capitalize()
+                        if each in wb_web.sheetnames:
+                            continue
+                        else: wb_web.create_sheet(each)
+                except:
+                    pass
+        wb_web.create_sheet('Конфликты')
         wb_web.save(self.pathDone)
         wb_web.close()
         wb_bit.close()
     
     def __count_tasks_in_departments(self)->dict:
         """Создает словарь с названиями всех бюро и количество программ ПЭ в каждом из них
-        return:  
+        return: Словарь с названиями всех бюро и количество программ ПЭ в каждом из них
         rtype: dict
         """
 
@@ -134,7 +128,10 @@ class Xl_work:
             if (first_two == 'ПЭ'):
                 if (sheet.cell(column=10, row=i).value != 'Завершена'):
                         tag = sheet.cell(column=21, row=i).value
-                        tags = tag.split(', ')
+                        try:
+                            tags = tag.split(', ')
+                        except:
+                            pass
                         for each in tags:
                             if (each in amount):
                                 amount[each] += 1
@@ -173,7 +170,15 @@ class Xl_work:
                                 our_row.append(cell.value)
                         wb_done[byros[5:].capitalize()].append(our_row)
                 else:
-                    wb_done['Мусорка'].append([cell.value for cell in ws_web[i+1]])
+                    our_row = []
+                    for j, cell in enumerate(ws_web[i+1]):
+                        if j == 5:
+                            our_row.append(each)
+                        elif j == ws_web.max_column:
+                            continue
+                        else:
+                            our_row.append(cell.value)
+                    wb_done['Конфликты'].append(our_row)
         wb_done.save(self.pathDone)
         wb_done.close()
         wb_web.close()
@@ -287,12 +292,12 @@ class Xl_work:
         
         """
 
-        if self.__correct_file_B() == False:
-            logging.critical('Unexpected Bitrix file structure',exc_info=True)
-        elif self.__correct_file_W() == False:
-            logging.critical('Unexpected Web-sys file structure',exc_info=True)
-        else:
-            self.__create_sheets()
-            self.__spread_on_sheets(self.__make_link_files())
-            self.__stat()
-            logging.info('Program completed successfully',exc_info=True)
+        # if self.__correct_file_B() == False:
+        #     logging.critical('Unexpected Bitrix file structure',exc_info=True)
+        # elif self.__correct_file_W() == False:
+        #     logging.critical('Unexpected Web-sys file structure',exc_info=True)
+        # else:
+        self.__create_sheets()
+        self.__spread_on_sheets(self.__make_link_files())
+        self.__stat()
+        logging.info('Program completed successfully',exc_info=True)
