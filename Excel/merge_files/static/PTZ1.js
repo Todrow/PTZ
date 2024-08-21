@@ -5,6 +5,7 @@ const fileName2 = document.getElementById('fileName2');
 const myForm = document.getElementById("myForm");
 const okButton = document.getElementById("ok_btn");
 const extButton = document.getElementById("exit_button");
+const sendButton = document.getElementById("send");
 
 fileInput1.addEventListener('change', function () {
     // Проверяем, есть ли выбранные файлы
@@ -13,9 +14,6 @@ fileInput1.addEventListener('change', function () {
         const selectedFile = fileInput1.files[0].name;
         // Отображаем имя файла в span
         fileName1.textContent = selectedFile;
-    } else {
-        // Если файл не выбран, изменяем текст на стандартный
-        fileName1.textContent = 'Выберите файл';
     }
 });
 
@@ -26,11 +24,22 @@ fileInput2.addEventListener('change', function () {
         const selectedFile = fileInput2.files[0].name;
         // Отображаем имя файла в span
         fileName2.textContent = selectedFile;
-    } else {
-        // Если файл не выбран, изменяем текст на стандартный
-        fileName2.textContent = 'Выберите файл';
     }
 });
+
+function checkIn() {
+    const field1 = document.getElementById('fileInput1').value;
+    const field2 = document.getElementById('fileInput2').value;
+    const submitButton = document.getElementById('send');
+
+    if (field1 && field2) {
+        submitButton.disabled = false;
+    }
+    else {
+        submitButton.disabled = true;
+    }
+}
+
 
 function generateUUID() {
     var d = new Date().getTime();
@@ -50,6 +59,12 @@ function generateUUID() {
 
 function handleClick() {
     document.getElementById("popup-overlay").style.display = "none";
+    fileName1.textContent = '';
+    fileName2.textContent = '';
+    myForm.reset();
+    sendButton.disabled = true;
+    fileInput1.value = null;
+    fileInput2.value = null;
 }
 
 function handleClickExit() {

@@ -14,9 +14,20 @@
                 document.getElementById("exit_button").style.display="none";
                 document.getElementById("ok_btn").style.display = 'block';
             }
+            function error(_) {
+                document.getElementById("loader").style.display="none";
+                document.getElementById("message-header").textContent = 'Ошибка';
+                document.getElementById("message-main").textContent = 'Попробууйте снова'
+            }
             function submitForm(event) {
                 event.preventDefault();
                 document.getElementById("popup-overlay").style.display = "block";
+                document.getElementById("loader").style.display="block";
+                document.getElementById("message-main").textContent = 'Отчёт можно будет загрузить по окончании обработки'
+                document.getElementById("message-header").textContent = 'Данные отправлены на сервер';
+                document.getElementById("exit_button").style.display="block";
+                document.getElementById("ok_btn").style.display = 'none';
+
                 fetch('/merge_files/', {
                     method: 'POST',
                     body: new FormData(document.getElementById("myForm")),
@@ -24,12 +35,7 @@
                         'X-CSRFToken': '{{ csrf_token }}',
                         'id': generateUUID(),
                     },
-                }).then((data) => data.json()).then((data) => done(data)) .catch(error());
-            }
-            function error() {
-                document.getElementById("loader").style.display="none";
-                document.getElementById("message-header").textContent = 'Ошибка';
-                document.getElementById("message-main").textContent = 'Попробууйте снова'
+                }).then((data) => data.json()).then((data) => done(data)) .catch(err => error(err));
             }
         </script>
     </head>
@@ -41,15 +47,15 @@
                 {% csrf_token %}
                 <label class="input-file">
                         <span class="input-file-text" type="text" id="fileName1"></span>
-                        <input type="file" name="file_bitrix" id="fileInput1" required>
+                        <input type="file" name="file_bitrix" id="fileInput1" oninput="checkIn()">
                         <span class="input-file-btn">Битрикс</span>
                 </label>
                 <label class="input-file">
                     <span class="input-file-text" type="text" id="fileName2"></span>
-                    <input type="file" name="file_web" id="fileInput2" required>        
+                    <input type="file" name="file_web" id="fileInput2" oninput="checkIn()">        
                     <span class="input-file-btn">Веб система</span>
                 </label>
-                <input class="btn" type="submit" value="Сохранить" id="send"></input>
+                <input class="btn" type="submit" value="Сохранить" id="send" disabled></input>
             </form>  
         </div>
         <div id="popup-overlay"> 

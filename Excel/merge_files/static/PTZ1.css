@@ -51,6 +51,21 @@ body {
     background-color: #c1c0c0;
 }
 
+.btn:disabled {
+    background-color: #e6e6e6;
+    color: #c1c0c0;
+}
+
+.btn:disabled:hover {
+    background-color: #e6e6e6;
+    color: #c1c0c0;
+}
+
+.btn:disabled:active {
+    background-color: #e6e6e6;
+    color: #c1c0c0;
+}
+
 .input-file {
     position: relative;
     top: 0px;
@@ -73,6 +88,11 @@ body {
     float: left;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width:thin;
+    white-space: nowrap;
     width: 65%;
     border-radius: 10px 0px 0 10px;
     border: 1px solid #e5e5e5;
@@ -192,7 +212,7 @@ img {
     background-color: #ce2a2e;
     position: relative;
     color: white;
-    bottom: 10%;
+    bottom: -20%;
     border: 1px solid #e5e5e5;
     height: auto;
     width: 110px;
@@ -224,6 +244,8 @@ img {
     background-color: #e6e6e6;
     color: #c1c0c0;
 }
+
+
 
 .loader {
     border: 16px solid #c1c0c0;
