@@ -212,7 +212,7 @@ class Xl_work:
         
         """
 
-        num_of_machines = self.__count_number_of_machines()
+        num_of_machines = self.__count_number_of_machines(self.paths[0])
         path = self.pathDone
         data = self.__count_tasks_in_departments()
 
