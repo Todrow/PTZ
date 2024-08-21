@@ -24,7 +24,12 @@
                         'X-CSRFToken': '{{ csrf_token }}',
                         'id': generateUUID(),
                     },
-                }).then((data) => data.json()).then((data) => done(data));
+                }).then((data) => data.json()).then((data) => done(data)) .catch(error());
+            }
+            function error() {
+                document.getElementById("loader").style.display="none";
+                document.getElementById("message-header").textContent = 'Ошибка';
+                document.getElementById("message-main").textContent = 'Попробууйте снова'
             }
         </script>
     </head>
