@@ -64,6 +64,17 @@ class Xl_work:
             wb.close()
             return False
 
+    def __delete_unwanted_rows(self)->None:
+        wb = self.open_file(self.paths[1])
+        sheet = wb.active
+
+        for i in range(sheet.max_row, 2, -1):
+            if (sheet.cell(column=2, row=i).value == 'Название') or (sheet.cell(column=2, row=i).value == None):
+                sheet.delete_rows(amount=1, idx=i)
+
+        wb.save(self.paths[1])
+        wb.close()
+
     def __make_link_files(self) -> dict:
         """Создет словрь из названий бюро, задействованных в ПЭ
 
@@ -294,6 +305,7 @@ class Xl_work:
         # elif self.__correct_file_W() == False:
         #     logging.critical('Unexpected Web-sys file structure',exc_info=True)
         # else:
+        self.__delete_unwanted_rows()
         self.__create_sheets()
         self.__spread_on_sheets(self.__make_link_files())
         self.__stat()
