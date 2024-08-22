@@ -241,10 +241,8 @@ class Xl_work:
             sheet[f'B{row_index}'] = value
 
         thin = Side(border_style="thin", color="000000")
-        border = Border(top=thin, left=thin, right=thin, bottom=thin)
 
         """Создание диаграммы"""
-        dll = DataLabelList(showVal=True)
         chart = PieChart()
         labels = Reference(sheet, min_col=1, min_row=3, max_row=sheet.max_row, max_col=1)
         info = Reference(sheet, min_col=2, min_row=2, max_row=sheet.max_row, max_col=2)
@@ -291,7 +289,6 @@ class Xl_work:
         :rtype: None
         
         """
-
         # if self.__correct_file_B() == False:
         #     logging.critical('Unexpected Bitrix file structure',exc_info=True)
         # elif self.__correct_file_W() == False:

@@ -35,16 +35,8 @@ def index(request):
         pass
     if request.method == 'POST' and request.FILES:
         file1 = request.FILES['file_bitrix']
-        if file1.name.split('.')[-1] == 'xls':
-            fs = FileSystemStorage()
-            fs.save(file1.name, file1)
-            file1 = os.path.abspath('./uploads/'+file1.name)
         ####
         file2 = request.FILES['file_web']
-        if file2.name.split('.')[-1] == 'xls':
-            fs = FileSystemStorage()
-            fs.save(file2.name, file2)
-            file2 = os.path.abspath('./uploads/'+file2.name)
         ####
         merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
         ####
