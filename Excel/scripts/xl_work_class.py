@@ -272,8 +272,8 @@ class Xl_work:
         chart.set_categories(labels)
         chart.dataLabels = DataLabelList()
         chart.dataLabels.showVal = True
-        chart.width = 20
-        chart.height = 10
+        chart.width = 15
+        chart.height = 12
         chart.dataLabels = DataLabelList()
         chart.dataLabels.showVal = True
         chart.dataLabels.showCatName = True
@@ -281,8 +281,9 @@ class Xl_work:
         data_label_font = Font(size=14)
         chart.dataLabels.font = data_label_font
         chart.legend = None
+        chart.series[0].explosion = 10
 
-        sheet.add_chart(chart, 'D5')
+        sheet.add_chart(chart, 'E1')
         
         
         wb.save(self.pathDone)
