@@ -40,7 +40,7 @@
                         'X-CSRFToken': '{{ csrf_token }}',
                         'id': generateUUID(),
                     },
-                }).then((data) => data.json()).then((data) => done(data)) .catch(err => error(err));
+                }).then((data) => data.json()).then((data) => done(data)) .catch(err => error('Ошибка на стороне сервера :/'));
             }
         </script>
     </head>
