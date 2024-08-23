@@ -1,7 +1,8 @@
 import openpyxl as oxl
 from xls2xlsx import XLS2XLSX
 from openpyxl.styles import Font, Alignment, colors, Color, Border, Side
-from openpyxl.chart import PieChart, Reference, Series
+from openpyxl.chart.pie_chart import PieChart, Series, PieChart3D, CustomSplit
+from openpyxl.chart import Reference
 from openpyxl.chart.label import DataLabelList 
 from openpyxl.chart.layout import Layout, ManualLayout
 from openpyxl.chart.shapes import GraphicalProperties
@@ -264,7 +265,7 @@ class Xl_work:
         thin = Side(border_style="thin", color="000000")
 
         """Создание диаграммы"""
-        chart = PieChart()
+        chart = PieChart3D()
         labels = Reference(sheet, min_col=1, min_row=3, max_row=sheet.max_row, max_col=1)
         info = Reference(sheet, min_col=2, min_row=2, max_row=sheet.max_row, max_col=2)
         chart.add_data(info, titles_from_data=True)
