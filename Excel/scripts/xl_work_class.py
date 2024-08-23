@@ -7,6 +7,7 @@ from openpyxl.chart.layout import Layout, ManualLayout
 from openpyxl.chart.shapes import GraphicalProperties
 import os
 import logging
+import copy
 
 logging.basicConfig(level=logging.INFO, filename="prog_log.log",filemode="w", format="%(asctime)s %(levelname)s %(message)s")
 
@@ -33,8 +34,8 @@ class Xl_work:
         self.paths = [web_src, bit_src]
         self.pathDone = done_src
         self.error = ''
-        check1 = self.__correct_file(self.paths[0])
-        check2 = self.__correct_file(self.paths[1])
+        check1 = self.__correct_file(copy.deepcopy(self.paths[0]))
+        check2 = self.__correct_file(copy.deepcopy(self.paths[1]))
         if check1 == 'web' and check2 == 'bitrix':
             self.error = ''
         elif check1 == 'can not read' or check2 == 'can not read':
