@@ -1,7 +1,7 @@
 import openpyxl as oxl
 from xls2xlsx import XLS2XLSX
 from openpyxl.styles import Font, Alignment, colors, Color, Border, Side
-from openpyxl.chart import PieChart, Reference, Series
+from openpyxl.chart import PieChart3D, Reference
 from openpyxl.chart.label import DataLabelList 
 from openpyxl.chart.layout import Layout, ManualLayout
 from openpyxl.chart.shapes import GraphicalProperties
@@ -75,6 +75,13 @@ class Xl_work:
                 return 'unknown'
 
     def __delete_unwanted_rows(self)->None:
+        """Удаляет строки, не содержащие необходимой информации, например
+        строки, дублирующие шапку страницы
+
+        :rtype: None
+        
+        """
+
         wb = self.open_file(self.paths[1])
         sheet = wb.active
 
@@ -264,24 +271,23 @@ class Xl_work:
         thin = Side(border_style="thin", color="000000")
 
         """Создание диаграммы"""
-        chart = PieChart()
-        labels = Reference(sheet, min_col=1, min_row=3, max_row=sheet.max_row, max_col=1)
-        info = Reference(sheet, min_col=2, min_row=2, max_row=sheet.max_row, max_col=2)
-        chart.add_data(info, titles_from_data=True)
-        chart.set_categories(labels)
-        chart.dataLabels = DataLabelList()
-        chart.dataLabels.showVal = True
-        chart.width = 20
-        chart.height = 10
-        chart.dataLabels = DataLabelList()
-        chart.dataLabels.showVal = True
-        chart.dataLabels.showCatName = True
-        chart.dataLabels.showPercentage = False
-        data_label_font = Font(size=14)
-        chart.dataLabels.font = data_label_font
-        chart.legend = None
+        chart = PieChart3D()
 
-        sheet.add_chart(chart, 'D5')
+        labels = Reference(sheet, min_col=1, min_row=2, max_row=sheet.max_row)
+        data = Reference(sheet, min_col=2, min_row=1, max_row=sheet.max_row)
+        chart.add_data(data, titles_from_data=True)
+        chart.set_categories(labels)
+
+        chart.width = 15
+        chart.height = 12
+
+        chart.legend.position = 'b'
+
+        chart.title = 'Программы ПЭ в бюро'
+        chart.series[0].explosion = 0  
+
+
+        sheet.add_chart(chart, 'E1')
         
         
         wb.save(self.pathDone)
