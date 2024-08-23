@@ -5,22 +5,25 @@ from django.core.files.storage import FileSystemStorage
 
 # Python Libs
 import os
+import copy
 
 # Project classes
 from scripts.exlWrapper import ExcelWrapper
 from scripts.xl_work_class import Xl_work
 
-def merge_files(path_bitrix: str, path_web: str, path_done: str):
+def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
     xl = Xl_work(path_web, path_bitrix, path_done)
-    ew = ExcelWrapper(['Вложения', 'Последний раз обновлено', 'Статус', 'Наименование сервисного центра'], ['ПЭ: дата время', 'ПЭ: Комментарий', 'ПЭ: наработка м/ч'], path_web)
-    ew.format()
-    xl.start()
-    wb = xl.open_file(path_done)
-    for sheet in wb.sheetnames[1:-1]:
-        ew.formatTitles(wb[sheet], True)
-        ew.formattingCells(wb[sheet])
-    wb.save(path_done)
-    wb.close()
+    if xl.error == '':
+        ew = ExcelWrapper(['Вложения', 'Последний раз обновлено', 'Статус', 'Наименование сервисного центра'], ['ПЭ: дата время', 'ПЭ: Комментарий', 'ПЭ: наработка м/ч'], path_web)
+        ew.format()
+        xl.start()
+        wb = xl.open_file(path_done)
+        for sheet in wb.sheetnames[1:-1]:
+            ew.formatTitles(wb[sheet], True)
+            ew.formattingCells(wb[sheet])
+        wb.save(path_done)
+        wb.close()
+    return xl.error
 
 path_done = os.path.abspath('./uploads/')+'/'
 def index(request):
@@ -38,7 +41,7 @@ def index(request):
         ####
         file2 = request.FILES['file_web']
         ####
-        merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
+        error = merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
         ####
         try:
             os.remove(file1)
@@ -48,7 +51,7 @@ def index(request):
             os.remove(file2)
         except:
             pass
-        return JsonResponse({"id": str(request.META['HTTP_ID'])})
+        return JsonResponse({"id": str(request.META['HTTP_ID']), "error": error})
     else:
         return render(request, 'index.html')
 

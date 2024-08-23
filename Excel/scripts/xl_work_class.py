@@ -32,37 +32,46 @@ class Xl_work:
         """
         self.paths = [web_src, bit_src]
         self.pathDone = done_src
-
-    def __correct_file_B(self)->bool:
-        """Проверяет соответсвие столбцов в файле из Битркса исходному шаблону
-        :rtype: bool
-        """
-        wb = self.open_file(self.paths[1])
-
-        sheet = wb.active
-        if sheet.cell(row=1, column=2).value == 'Название':
-            wb.close()
-            print('ok')
-            return True
+        self.error = ''
+        check1 = self.__correct_file(self.paths[0])
+        check2 = self.__correct_file(self.paths[1])
+        if check1 == 'web' and check2 == 'bitrix':
+            self.error = ''
+        elif check1 == 'can not read' or check2 == 'can not read':
+            if check1 == 'can not read': self.error += 'Файл web не читается'
+            if check2 == 'can not read': self.error += 'Файл bitrix не читается'
+        elif check1 == check2:
+            self.error = 'Файлы одинаковы'
+        elif check2 == 'web' and check1 == 'bitrix':
+            self.error = 'Файлы перепутаны местами'
         else:
-            wb.close()
-            return False
-           
-    def __correct_file_W(self)->bool:
-        """Проверяет соответсвие столбцов в файле из Веб-системы исходному шаблону
-        :rtype: bool
+            if check1 == 'unknown':
+                self.error += 'Файл web не тот'
+            if check2 == 'unknown':
+                self.error += 'Файл bitrix не тот'
+
+
+    def __correct_file(self, path) -> str:
+        """Проверяет соответсвие столбцов в файле исходному шаблону.
+        :param path: путь либо объект проверяемого файла
+        :type path: str or FileTypeObject
+        :return: возвращает строку с предположительным названием файла.
+        :rtype: str
         """
-
-        wb = self.open_file(self.paths[0])
-
-        sheet = wb.active
-        if sheet.cell(row=1, column=6).value == 'Опытный узел':
-            wb.close()
-            print('ok')
-            return True
+        wb = self.open_file(path)
+        if wb == False:
+            return 'can not read'
         else:
-            wb.close()
-            return False
+            sheet = wb.active
+            if sheet.cell(row=1, column=2).value == 'Название':
+                wb.close()
+                return 'bitrix'
+            elif sheet.cell(row=1, column=7).value == 'Опытный узел':
+                wb.close()
+                return 'web'
+            else:
+                wb.close()
+                return 'unknown'
 
     def __delete_unwanted_rows(self)->None:
         wb = self.open_file(self.paths[1])
@@ -290,7 +299,10 @@ class Xl_work:
             wb = x2x.to_xlsx()
         except Exception as e:
             print(e)
-            wb = oxl.load_workbook(filename=path)
+            try:
+                wb = oxl.load_workbook(filename=path)
+            except:
+                return False
         return wb
 
     def start(self) -> None:
@@ -309,4 +321,3 @@ class Xl_work:
         self.__create_sheets()
         self.__spread_on_sheets(self.__make_link_files())
         self.__stat()
-        logging.info('Program completed successfully',exc_info=True)

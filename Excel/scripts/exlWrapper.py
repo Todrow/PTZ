@@ -11,16 +11,33 @@ def find_all(a_str, sub): # Все вхождения подстроки в ст
         start += len(sub)
 
 class ExcelWrapper: # 
-    def __init__(self, deleteList: list, blackList: list, path: str) -> None:   
-        try:
-            x2x = XLS2XLSX(path)
-            self.wb = x2x.to_xlsx()
-        except:
-            self.wb = oxl.load_workbook(filename=path)
+    def __init__(self, deleteList: list, blackList: list, path) -> None:   
+        # try:
+        #     x2x = XLS2XLSX(path)
+        #     self.wb = x2x.to_xlsx()
+        # except:
+        #     self.wb = oxl.load_workbook(filename=path)
+        self.wb = self.__open_file(path)
         self.DELETE_LIST = deleteList
         self.ws = self.wb.active
         self.BLACK_LIST = blackList
         self.path = path
+
+    def __open_file(self, path):
+        """Открывает файл как work_book в openpyxl
+
+        :param path: путь к файлу, который необходимо открыть
+        :type path: str 
+        
+        """
+
+        try:
+            x2x = XLS2XLSX(path)
+            wb = x2x.to_xlsx()
+        except Exception as e:
+            print(e)
+            wb = oxl.load_workbook(filename=path)
+        return wb
 
     def __deleteColumns(self, blackList: list) -> None: # Удаление из blackList
         title = self.ws[1]
