@@ -212,6 +212,17 @@ class Xl_work:
         wb_web.close()
 
     def __count_unique(self, column: int, path = None, sheet = None)->int:
+        """Рассчитывает число уникальных элементов, получив на вход номер столбца с идентификаторами, а 
+        также путь к файлу или лист уже открытого
+
+        Args:
+            column (int): Номер колонки, где находятся индексы
+            path (_type_, optional): Путь к файлу. Defaults to None.
+            sheet (_type_, optional): Лист в открытом файле. Defaults to None.
+
+        Returns:
+            int: Число машин
+        """
         if sheet:
             unique_elems = []
 
@@ -312,11 +323,13 @@ class Xl_work:
         wb.close()
     
     def open_file(self, path):
-        """Открывает файл как work_book в openpyxl
+        """Открывает файл
 
-        :param path: путь к файлу, который необходимо открыть
-        :type path: str 
-        
+        Args:
+            path (_type_): путь к файлу
+
+        Returns:
+            _type_: Excel WorkBook
         """
 
         try:
