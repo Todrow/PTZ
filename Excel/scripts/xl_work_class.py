@@ -229,7 +229,6 @@ class Xl_work:
             for i in range(2, sheet.max_row):
                 if (sheet.cell(column=column, row=i).value not in unique_elems):
                     unique_elems.append(sheet.cell(column=column, row=i).value)
-
             wb.save(path)
             wb.close()
             return (len(unique_elems))
@@ -245,7 +244,7 @@ class Xl_work:
         """
 
         num_of_machines = self.__count_unique(path=self.paths[0], column=2)
-        num_of_programms = self.__count_unique(path=self.paths[0], column=7)
+        num_of_programms = self.__count_unique(path=self.paths[0], column=6)
         path = self.pathDone
         data = self.__count_tasks_in_departments()
 
