@@ -141,7 +141,7 @@ class Xl_work:
         rtype: dict
         """
 
-        wb = oxl.load_workbook(self.paths[1])
+        wb = self.open_file(self.paths[1])
         sheet = wb.active
         amount = {}
         for i in range(1, sheet.max_row):
@@ -204,31 +204,30 @@ class Xl_work:
         wb_done.save(self.pathDone)
         wb_done.close()
         wb_web.close()
-          
-    def __count_number_of_machines(self, path)->int:
-        """Возвращает количество уникальных машин в ПЭ, взяв их из файла выгруженного из веб-системы
 
-        :param path: Путь к файлу веб-системы
-        :type path: str
+    def __count_unique(self, column: int, path = None, sheet = None)->int:
+        if sheet:
+            unique_elems = []
 
-        :rtype: int
+            for i in range(2, sheet.max_row):
+                if (sheet.cell(column=column, row=i).value not in unique_elems):
+                    unique_elems.append(sheet.cell(column=column, row=i).value)
+            return(len(unique_elems))
+        if path:
+            wb = self.open_file(path)
 
-        """
+            sheet = wb.active
+
+            unique_elems = []
+
+            for i in range(2, sheet.max_row):
+                if (sheet.cell(column=column, row=i).value not in unique_elems):
+                    unique_elems.append(sheet.cell(column=column, row=i).value)
+
+            wb.save(path)
+            wb.close()
+            return (len(unique_elems))
         
-        wb = self.open_file(path)     
-
-        sheet = wb.active 
-
-        unique_machines = []
-
-        for i in range(2, sheet.max_row):
-            if (sheet.cell(column=2, row=i).value not in unique_machines):
-                unique_machines.append(sheet.cell(column=2, row=i).value)
-
-        wb.save(path)
-        wb.close()
-        return (len(unique_machines))
-
     def __stat(self)->None:
         """Создает в итоговом файле лист со статистикой
         На этом листе выводит общее количество тракторов, которое находит через функцию __count_number_of_machines,
@@ -239,7 +238,8 @@ class Xl_work:
         
         """
 
-        num_of_machines = self.__count_number_of_machines(self.paths[0])
+        num_of_machines = self.__count_unique(path=self.paths[0], column=2)
+        num_of_programms = self.__count_unique(path=self.paths[0], column=7)
         path = self.pathDone
         data = self.__count_tasks_in_departments()
 
@@ -248,26 +248,41 @@ class Xl_work:
         wb.active=wb['Статистика']
         sheet = wb.active
 
+        sheet.column_dimensions['A'].width = 36.29
+        sheet.column_dimensions['B'].width = 12
+        sheet.column_dimensions['C'].width = 25
 
         """Выведение числа тракторов"""
         sheet.cell(column=1, row=1).value = 'Количество тракторов'
         sheet.cell(column=1, row=1).font = Font(name='Times New Roman', bold=True, size=12)
-        sheet.cell(column=2, row=1).font = Font(name='Times New Roman', bold=False, size=12)
-        sheet.column_dimensions['A'].width = 30
-
         sheet.cell(column=2, row=1).value = num_of_machines
+        sheet.cell(column=2, row=1).font = Font(name='Times New Roman', bold=False, size=12)
+
+        '''Выведение общ. числа ПЭ'''
+        sheet.cell(column=1, row=2).value = 'Количество программ ПЭ'
+        sheet.cell(column=1, row=2).font = Font(name='Times New Roman', bold=True, size=12)
+        sheet.cell(column=2, row=2).value = num_of_programms
+        sheet.cell(column=2, row=2).font = Font(name='Times New Roman', bold=False, size=12)
 
         """Таблица с числом проектов у каждого бюро"""
-        for row_index, (key, value) in enumerate(data.items(), start=3):
+        sheet.cell(column=1, row=4).value = 'Бюро'
+        sheet.cell(column=1, row=4).font = Font(name='Times New Roman', bold=True, size=12)
+        sheet.cell(column=2, row=4).value = 'Кол-во ПЭ'
+        sheet.cell(column=2, row=4).font = Font(name='Times New Roman', bold=True, size=12)
+        sheet.cell(column=3, row=4).value = 'Кол-во тракторов в ПЭ'
+        sheet.cell(column=3, row=4).font = Font(name='Times New Roman', bold=True, size=12)
+        for row_index, (key, value) in enumerate(data.items(), start=5):
             sheet[f'A{row_index}'] = key
             sheet[f'B{row_index}'] = value
+            sheet[f'C{row_index}'] = self.__count_unique(column=2, sheet=wb[wb.sheetnames[row_index-4]])
 
         thin = Side(border_style="thin", color="000000")
 
         """Создание диаграммы"""
         chart = PieChart3D()
-        labels = Reference(sheet, min_col=1, min_row=3, max_row=sheet.max_row, max_col=1)
-        info = Reference(sheet, min_col=2, min_row=2, max_row=sheet.max_row, max_col=2)
+        labels = Reference(sheet, min_col=1, min_row=4, max_row=sheet.max_row, max_col=1)
+        info = Reference(sheet, min_col=2, min_row=3, max_row=sheet.max_row, max_col=2)
+        print(chart.path)
         chart.add_data(info, titles_from_data=True)
         chart.set_categories(labels)
         chart.dataLabels = DataLabelList()
@@ -275,7 +290,7 @@ class Xl_work:
         chart.width = 15
         chart.height = 12
         chart.dataLabels = DataLabelList()
-        chart.dataLabels.showVal = True
+        chart.dataLabels.showVal = False
         chart.dataLabels.showCatName = True
         chart.dataLabels.showPercentage = False
         data_label_font = Font(size=14)
@@ -283,6 +298,8 @@ class Xl_work:
         chart.legend = None
         chart.series[0].explosion = 10
 
+        # sheet['A8'].hyperlink = "#sheet2!E5"
+        # sheet['A8'].value = 'JJ'
         sheet.add_chart(chart, 'E1')
         
         
