@@ -282,6 +282,9 @@ class Xl_work:
             sheet[f'B{row_index}'] = value
             sheet[f'C{row_index}'] = self.__count_unique(column=2, sheet=wb[wb.sheetnames[row_index-4]])
 
+        for i in range(2, len(wb.sheetnames)-1):
+            sheet.cell(row = 3+i, column=1).hyperlink = f"#'{wb.sheetnames[i]}'!A1"
+
 
         """Создание диаграммы"""
         chart = PieChart3D()
