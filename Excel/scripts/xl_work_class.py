@@ -283,7 +283,7 @@ class Xl_work:
         chart.legend.position = 'b'
 
         chart.title = 'Программы ПЭ в бюро'
-        chart.series[0].explosion = 0  
+        chart.series[0].explosion = 10  
 
 
         sheet.add_chart(chart, 'E1')
