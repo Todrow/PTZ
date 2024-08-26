@@ -257,9 +257,9 @@ class Xl_work:
 
         """Выведение числа тракторов"""
         sheet.cell(column=1, row=1).value = 'Количество тракторов'
-        sheet.cell(column=1, row=1).font = Font(name='Times New Roman', bold=True, size=12)
-        sheet.cell(column=2, row=1).font = Font(name='Times New Roman', bold=False, size=12)
-        sheet.column_dimensions['A'].width = 30
+        sheet.cell(column=1, row=1).font = Font(name='Calibri', bold=True, size=12)
+        sheet.cell(column=2, row=1).font = Font(name='Calibri', bold=False, size=12)
+
 
         sheet.cell(column=2, row=1).value = num_of_machines
 
@@ -268,7 +268,6 @@ class Xl_work:
             sheet[f'A{row_index}'] = key
             sheet[f'B{row_index}'] = value
 
-        thin = Side(border_style="thin", color="000000")
 
         """Создание диаграммы"""
         chart = PieChart3D()
@@ -288,7 +287,9 @@ class Xl_work:
 
 
         sheet.add_chart(chart, 'E1')
-        
+
+        wb.move_sheet(wb.active, offset=-(len(wb.sheetnames) - 1))
+        wb.active = wb['Статистика']
         
         wb.save(self.pathDone)
         wb.close()
