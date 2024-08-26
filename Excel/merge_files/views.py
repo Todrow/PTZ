@@ -18,7 +18,7 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
         ew.format()
         xl.start()
         wb = xl.open_file(path_done)
-        for sheet in wb.sheetnames[1:-1]:
+        for sheet in wb.sheetnames[2:]:
             ew.formatTitles(wb[sheet], True)
             ew.formattingCells(wb[sheet])
         wb.save(path_done)
