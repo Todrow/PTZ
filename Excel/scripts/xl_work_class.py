@@ -1,8 +1,7 @@
 import openpyxl as oxl
 from xls2xlsx import XLS2XLSX
 from openpyxl.styles import Font, Alignment, colors, Color, Border, Side
-from openpyxl.chart.pie_chart import PieChart, Series, PieChart3D, CustomSplit
-from openpyxl.chart import Reference
+from openpyxl.chart import PieChart3D, Reference
 from openpyxl.chart.label import DataLabelList 
 from openpyxl.chart.layout import Layout, ManualLayout
 from openpyxl.chart.shapes import GraphicalProperties
@@ -76,6 +75,13 @@ class Xl_work:
                 return 'unknown'
 
     def __delete_unwanted_rows(self)->None:
+        """Удаляет строки, не содержащие необходимой информации, например
+        строки, дублирующие шапку страницы
+
+        :rtype: None
+        
+        """
+
         wb = self.open_file(self.paths[1])
         sheet = wb.active
 
@@ -276,7 +282,6 @@ class Xl_work:
             sheet[f'B{row_index}'] = value
             sheet[f'C{row_index}'] = self.__count_unique(column=2, sheet=wb[wb.sheetnames[row_index-4]])
 
-        thin = Side(border_style="thin", color="000000")
 
         """Создание диаграммы"""
         chart = PieChart3D()
@@ -285,23 +290,20 @@ class Xl_work:
         print(chart.path)
         chart.add_data(info, titles_from_data=True)
         chart.set_categories(labels)
-        chart.dataLabels = DataLabelList()
-        chart.dataLabels.showVal = True
+
         chart.width = 15
         chart.height = 12
-        chart.dataLabels = DataLabelList()
-        chart.dataLabels.showVal = False
-        chart.dataLabels.showCatName = True
-        chart.dataLabels.showPercentage = False
-        data_label_font = Font(size=14)
-        chart.dataLabels.font = data_label_font
-        chart.legend = None
-        chart.series[0].explosion = 10
 
-        # sheet['A8'].hyperlink = "#sheet2!E5"
-        # sheet['A8'].value = 'JJ'
+        chart.legend.position = 'b'
+
+        chart.title = 'Программы ПЭ в бюро'
+        chart.series[0].explosion = 10  
+
+
         sheet.add_chart(chart, 'E1')
-        
+
+        wb.move_sheet(wb.active, offset=-(len(wb.sheetnames) - 1))
+        wb.active = wb['Статистика']
         
         wb.save(self.pathDone)
         wb.close()
