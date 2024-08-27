@@ -212,6 +212,16 @@ class Xl_work:
         wb_web.close()
 
     def __count_unique(self, column: int, path = None, sheet = None)->int:
+        """Считает число уникальных значений в столбце.
+        :param column: номер столбца, где ищем значения (отсчёт с 1)
+        :type column: int
+        :param path: путь либо объект файла, где находится столбец, defaults to None
+        :type path: str or FileTypeObject
+        :param sheet: объект листа excel, где находится столбец, defaults to None
+        :type path: str or FileTypeObject
+        :return: возвращает число уникальных значений.
+        :rtype: int
+        """
         if sheet:
             unique_elems = []
 
@@ -289,7 +299,6 @@ class Xl_work:
         chart = PieChart3D()
         labels = Reference(sheet, min_col=1, min_row=5, max_row=sheet.max_row, max_col=1)
         info = Reference(sheet, min_col=2, min_row=4, max_row=sheet.max_row, max_col=2)
-        print(chart.path)
         chart.add_data(info, titles_from_data=True)
         chart.set_categories(labels)
 
@@ -336,11 +345,6 @@ class Xl_work:
         :rtype: None
         
         """
-        # if self.__correct_file_B() == False:
-        #     logging.critical('Unexpected Bitrix file structure',exc_info=True)
-        # elif self.__correct_file_W() == False:
-        #     logging.critical('Unexpected Web-sys file structure',exc_info=True)
-        # else:
         self.__delete_unwanted_rows()
         self.__create_sheets()
         self.__spread_on_sheets(self.__make_link_files())
