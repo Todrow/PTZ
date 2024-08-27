@@ -16,5 +16,7 @@ Excel/uploads/done.xlsx
 Excel/merge_files/__pycache__/urls.cpython-312.pyc
 Excel/merge_files/__pycache__/views.cpython-312.pyc
 Excel/merge_files/__pycache__/views.cpython-312.pyc
-Excel/merge_files/__pycache__/urls.cpython-312.pyc
+Excel/scripts/__pycache__/
+Excel/merge_files/__pycache__/
+Excel/excel/__pycache__/
 /__pycache__/
