@@ -3,6 +3,7 @@ from openpyxl.styles import Font
 from openpyxl.chart import PieChart3D, Reference
 import logging
 import copy
+import os
 
 logging.basicConfig(level=logging.INFO, filename="prog_log.log",filemode="w", format="%(asctime)s %(levelname)s %(message)s")
 
@@ -31,8 +32,16 @@ class Xl_work:
         self.error = ''
         check1 = self.__correct_file(copy.deepcopy(self.paths[0]))
         check2 = self.__correct_file(copy.deepcopy(self.paths[1]))
+        xls_check1 = self.__not_xls(self.paths[0])
+        xls_check2 = self.__not_xls(self.paths[1])
+
+
         if check1 == 'web' and check2 == 'bitrix':
             self.error = ''
+        elif xls_check1 == 'xls error':
+            self.error = 'Файл выгрузки с веб-сист в формате xls, нужен xlsx'
+        elif xls_check2 == 'xls error':
+            self.error = 'Файл выгрузки с битрикса в формате xls, нужен xlsx'
         elif check1 == 'can not read' or check2 == 'can not read':
             if check1 == 'can not read': self.error += 'Файл web не читается'
             if check2 == 'can not read': self.error += 'Файл bitrix не читается'
@@ -46,6 +55,13 @@ class Xl_work:
             if check2 == 'unknown':
                 self.error += 'Файл bitrix не тот'
 
+    def __not_xls(self, path:str)->str:
+        ext = os.path.splitext(path)[1]
+
+        if ext == '.xls':
+            return 'xls error'
+        else:
+            return ''
 
     def __correct_file(self, path) -> str:
         """Проверяет соответсвие столбцов в файле исходному шаблону.
