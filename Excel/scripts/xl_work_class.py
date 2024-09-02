@@ -1,11 +1,6 @@
 import openpyxl as oxl
-from xls2xlsx import XLS2XLSX
-from openpyxl.styles import Font, Alignment, colors, Color, Border, Side
+from openpyxl.styles import Font
 from openpyxl.chart import PieChart3D, Reference
-from openpyxl.chart.label import DataLabelList 
-from openpyxl.chart.layout import Layout, ManualLayout
-from openpyxl.chart.shapes import GraphicalProperties
-import os
 import logging
 import copy
 
@@ -331,14 +326,9 @@ class Xl_work:
         """
 
         try:
-            x2x = XLS2XLSX(path)
-            wb = x2x.to_xlsx()
-        except Exception as e:
-            print(e)
-            try:
-                wb = oxl.load_workbook(filename=path)
-            except:
-                return False
+            wb = oxl.load_workbook(filename=path)
+        except:
+            return False
         return wb
 
     def start(self) -> None:

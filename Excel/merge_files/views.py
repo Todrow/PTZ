@@ -1,11 +1,9 @@
 # Django importing
 from django.shortcuts import render
-from django.http import HttpResponse, FileResponse, JsonResponse
-from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse, JsonResponse
 
 # Python Libs
 import os
-import copy
 
 # Project classes
 from scripts.exlWrapper import ExcelWrapper

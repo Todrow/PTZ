@@ -1,6 +1,5 @@
 import openpyxl as oxl
 from openpyxl.styles import Font, Alignment
-from xls2xlsx import XLS2XLSX
 
 def find_all(a_str, sub): # Все вхождения подстроки в строку
     start = 0
@@ -30,13 +29,7 @@ class ExcelWrapper: #
         :type path: str 
         
         """
-
-        try:
-            x2x = XLS2XLSX(path)
-            wb = x2x.to_xlsx()
-        except Exception as e:
-            print(e)
-            wb = oxl.load_workbook(filename=path)
+        wb = oxl.load_workbook(filename=path)
         return wb
 
     def __deleteColumns(self, blackList: list) -> None: # Удаление из blackList
