@@ -9,7 +9,21 @@ import os
 from scripts.exlWrapper import ExcelWrapper
 from scripts.xl_work_class import Xl_work
 
+"""Views отвечает за принятие запросов, обработку данных из них и возрат ответов пользователю
+"""
+
 def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
+    """Соединяет 2 загруженных файла в единый отчет, используя классы Xl_work и ExcelWrapper
+
+    Args:
+        path_bitrix (str): Путь к файлу с выгрузской из Битрикса
+        path_web (str): Путь к файлу с выгрузкой из Веб-системы
+        path_done (str): Путь к итоговому файл
+
+    Returns:
+        str: Возвращает значение ошибки, которое используется для вывода в всплывающем окне
+        если ошибок нет, то значение - пустая строка
+    """
     xl = Xl_work(path_web, path_bitrix, path_done)
     if xl.error == '':
         ew = ExcelWrapper(['Вложения', 'Последний раз обновлено', 'Статус', 'Наименование сервисного центра'], ['ПЭ: дата время', 'ПЭ: Комментарий', 'ПЭ: наработка м/ч'], path_web)
@@ -25,6 +39,20 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
 
 path_done = os.path.abspath('./uploads/')+'/'
 def index(request):
+    """Если приходит запрос, содержащий необходимые файлы, с методом POST, то возвращается json файл с id и
+    значение ошибки. Значение ошибки формируется в функции merge_files, которая в свою очередь использует класс
+    Xl_work для этого
+
+    Если запрос не поступал, то пользователю выводится стандартная страница index.html
+
+    Готовый файл отчета храниться на сервере 5 минут (300 секунд)
+
+    Args:
+        request (_type_): Запрос к серверу
+
+    Returns:
+        _type_: _description_
+    """
     global path_done
     try:
         import time
@@ -54,6 +82,16 @@ def index(request):
         return render(request, 'index.html')
 
 def download_file(request, id):
+    """Возвращает файл при нажатии на ссылку 'Скачать'
+
+    Args:
+        request (_type_): Запрос к серверу на скачивание
+        id (_type_): id, по которому определяется путь к готовому файлу 
+        (Это необходимо для загрузки от нескольких пользователей одновременно)
+
+    Returns:
+        _type_: Отправлемый файл готового отчета
+    """
     global path_done
     with open(path_done+id+'.xlsx', 'rb') as file:
         response = HttpResponse(file.read())
