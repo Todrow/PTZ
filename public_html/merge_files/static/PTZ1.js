@@ -28,6 +28,7 @@ fileInput2.addEventListener('change', function () {
 });
 
 function checkIn() {
+    // Выключает кнопку до момента выбора обоих файлов
     const field1 = document.getElementById('fileInput1').value;
     const field2 = document.getElementById('fileInput2').value;
     const submitButton = document.getElementById('send');
@@ -42,6 +43,8 @@ function checkIn() {
 
 
 function generateUUID() {
+    // Генерирует UUID код, далее применяемый в назначении названия файлу готового отчета,
+    // что позволяет избегать конфликтов при одновременной загрузке нескольких файлов
     var d = new Date().getTime();
 
     if (window.performance && typeof window.performance.now === "function") {
@@ -58,6 +61,7 @@ function generateUUID() {
 }
 
 function handleClick() {
+    // Очищает форму по нажатию на кнопку
     document.getElementById("popup-overlay").style.display = "none";
     fileName1.textContent = '';
     fileName2.textContent = '';
@@ -68,11 +72,15 @@ function handleClick() {
 }
 
 function handleClickExit() {
+    // Перезагружает страницу при нажатии кнопки 'Отмена'
     location.reload();
 }
 
+// Отправляет форму при нажатии на submit кнопку
 myForm.addEventListener("submit", submitForm);
 
+// Запускает функцию handleClick по нажатию на okButton
 okButton.addEventListener("click", handleClick);
 
+// Запускает функцию handleClick по нажатию extButton
 extButton.addEventListener("click", handleClickExit);

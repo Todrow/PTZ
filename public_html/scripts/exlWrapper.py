@@ -11,11 +11,13 @@ def find_all(a_str, sub): # Все вхождения подстроки в ст
 
 class ExcelWrapper: # 
     def __init__(self, deleteList: list, blackList: list, path) -> None:   
-        # try:
-        #     x2x = XLS2XLSX(path)
-        #     self.wb = x2x.to_xlsx()
-        # except:
-        #     self.wb = oxl.load_workbook(filename=path)
+        """Функция innit класса
+
+        Args:
+            deleteList (list): Список колонок под удаление
+            blackList (list): Список колонок, где не нужно заполнять пропущенные значения
+            path (_type_): Полное имя, обрабатываемого файла
+        """
         self.wb = self.__open_file(path)
         self.DELETE_LIST = deleteList
         self.ws = self.wb.active
@@ -25,14 +27,22 @@ class ExcelWrapper: #
     def __open_file(self, path):
         """Открывает файл как work_book в openpyxl
 
-        :param path: путь к файлу, который необходимо открыть
-        :type path: str 
-        
+        Args:
+            path (_type_): путь к файлу, который необходимо открыть
+
+        Returns:
+            _type_: Книга Excel
         """
+
         wb = oxl.load_workbook(filename=path)
         return wb
 
-    def __deleteColumns(self, blackList: list) -> None: # Удаление из blackList
+    def __deleteColumns(self, blackList: list) -> None:
+        """Удаляет заданные колонки
+
+        Args:
+            blackList (list): Список колонок под удаление
+        """
         title = self.ws[1]
         del_i = 1
         for index, name in enumerate(title):
@@ -40,7 +50,15 @@ class ExcelWrapper: #
                 self.ws.delete_cols(index+del_i, 1)
                 del_i -= 1
 
-    def __pasteValues(self, blackList: list) -> None: # Вставить пропущенные значения
+    def __pasteValues(self, blackList: list) -> None:
+        """Вставляет пропущенные значения,
+        Берет значения из соседних строк в пустые ячейки, кроме ячеек из
+        стобцов в blacklist
+        В этих столбцах ничего не добавляется
+
+        Args:
+            blackList (list): Список столбцов, где не надо заполнят пропущенные значения
+        """
         for index, row in enumerate(self.ws.values, start=2):
             for indexColumn, value in enumerate(row, start=1):
                 if self.ws.cell(row=1, column=indexColumn).value in blackList:
@@ -49,16 +67,14 @@ class ExcelWrapper: #
                     self.ws.cell(row=index, column=indexColumn).value = self.ws.cell(row=index-1, column=indexColumn).value
 
     def formatTitles(self, ws, do_add: bool) -> None:
-        """ Форматирует названия столбцов:
+        """Форматирует названия столбцов:
         задает им ширину, выравнивание, шрифт и его начертание
 
-        :param ws: рабочий лист Excel
-
-        :param do_add: сообщает о необходимости добавлять шапку
-        :type do_add: bool
-
-        :rtype: None
+        Args:
+            ws (_type_): рабочий лист Excel
+            do_add (bool): сообщает о необходимости добавлять шапку
         """
+
         if do_add:
             ws.insert_rows(0)
         names = ["Модель трактора", "№ трактора", "Граничная дата гарантии", "Продолжительность контроля, м/ч", "Наработка, м/ч", "Опытный узел", "Дата и время обращения", "ПЭ: Комментарий", "Дефект выявлен на м/ч", "Разработчик программы ПЭ"]
@@ -71,10 +87,10 @@ class ExcelWrapper: #
         """Форматирует ячейки таблицы:
         задает ширину колонок и выравнивание текста
 
-        :param ws:рабочий лист Excel
-
-        :rtype: None        
+        Args:
+            ws (_type_): рабочий лист Excel
         """
+
         ws.row_dimensions[1].height = 30
         widths = {'A': 17.554, 'B': 16.332, 'C': 19.109, 'D': 23.109, 'E': 12.886, 'F': 53.441, 'G': 18.664, 'H': 105.441, 'I': 20.332, 'J': 25.441}
         for row in ws.rows:
@@ -94,7 +110,9 @@ class ExcelWrapper: #
                                 cell.value = cell.value[:each+2] + '\n' + cell.value[each+2:]
                                 ad += 1
     
-    def format(self) -> None: # Применяем всё форматирование
+    def format(self) -> None:
+        """Применяет все форматирование
+        """
         # Удаляем лишнее
         self.__deleteColumns(self.DELETE_LIST)
         # Вставляем пропущенное
@@ -105,6 +123,11 @@ class ExcelWrapper: #
         self.formattingCells(self.ws)
         self.save(self.path)
 
-    def save(self, path: str) -> None: # Сохраняем изменнёный файл
+    def save(self, path: str) -> None:
+        """Созраняет файл книгу Excel
+
+        Args:
+            path (str): Полное имя файла при сохранении
+        """
         self.wb.save(path)
         self.wb.close()
