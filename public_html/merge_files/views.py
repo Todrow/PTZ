@@ -21,7 +21,7 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
             ew.formattingCells(wb[sheet])
         wb.save(path_done)
         wb.close()
-    return xl.error
+    return xl.error, xl.message
 
 path_done = '/var/www/PTZ/public_html/uploads/'
 def index(request):
@@ -39,7 +39,7 @@ def index(request):
         ####
         file2 = request.FILES['file_web']
         ####
-        error = merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
+        error, message = merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
         ####
         try:
             os.remove(file1)
@@ -49,7 +49,7 @@ def index(request):
             os.remove(file2)
         except:
             pass
-        return JsonResponse({"id": str(request.META['HTTP_ID']), "error": error})
+        return JsonResponse({"id": str(request.META['HTTP_ID']), "error": error, "message": message})
     else:
         return render(request, 'index.html')
 

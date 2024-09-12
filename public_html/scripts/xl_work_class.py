@@ -27,6 +27,7 @@ class Xl_work:
         self.paths = [web_src, bit_src]
         self.pathDone = done_src
         self.error = ''
+        self.message = ''
         check1 = self.__correct_file(copy.deepcopy(self.paths[0]))
         check2 = self.__correct_file(copy.deepcopy(self.paths[1]))
         if check1 == 'web' and check2 == 'bitrix':
