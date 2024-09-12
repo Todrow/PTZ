@@ -87,14 +87,15 @@ class Xl_work:
         wb.close()
 
     def __make_link_files(self) -> dict:
-        """Создет словрь из названий бюро, задействованных в ПЭ
+        """Создет словри из названийи описаний бюро, задействованных в ПЭ
 
-        :rtype: dict
+        :rtype: dicts
         
         """
         wb = self.open_file(self.paths[1])
         
         names = {}
+        discriptions = {}
         ws = wb.active
 
         for i, el in enumerate(ws["B"]):
@@ -103,8 +104,14 @@ class Xl_work:
                     names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
                 except:
                     pass
+        for i, el in enumerate(ws["C"]):
+            if el.value[:2] == 'ПЭ':
+                try:
+                    discriptions[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
+                except:
+                    pass
         wb.close()
-        return names
+        return names, discriptions
         
     def __create_sheets(self) -> None:
         """ Создает в листы с информацией для каждого бюро в итоговом файле
@@ -162,7 +169,7 @@ class Xl_work:
         
         return amount
 
-    def __spread_on_sheets(self, links: dict) -> None:
+    def __spread_on_sheets(self, linksn: dict, linksd: dict) -> None:
         """Переносит информацию из веб-системы на лист соответсвующего бюро в итоговом файле
 
         :param links: словарь ключей-названий бюро
@@ -180,8 +187,19 @@ class Xl_work:
                 continue
             knots = el.value.split('; ')
             for each in knots:
-                if each in links.keys():
-                    for byros in links[each]:
+                if each in linksn.keys():
+                    for byros in linksn[each]:
+                        our_row = []
+                        for j, cell in enumerate(ws_web[i+1]):
+                            if j == 5:
+                                our_row.append(each)
+                            elif j == ws_web.max_column-1:
+                                continue
+                            else:
+                                our_row.append(cell.value)
+                        wb_done[byros[5:].capitalize()].append(our_row)
+                elif each in linksd.keys():
+                    for byros in linksd[each]:
                         our_row = []
                         for j, cell in enumerate(ws_web[i+1]):
                             if j == 5:
