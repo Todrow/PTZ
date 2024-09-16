@@ -7,7 +7,8 @@
         <title>Обработка данных</title>
         <script>
             function done(result){
-                console.log(result.message)
+                // Функция, меняющая всплывающее окно при получении ответа от сервера
+                console.log(result.message);
                 if (result.error == ''){
                     // Выолняет этот код если файл успешно обработан без оишбок
                     document.getElementById('ok_btn').href="download/"+result.id;
