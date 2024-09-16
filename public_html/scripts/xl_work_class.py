@@ -3,7 +3,6 @@ from openpyxl.styles import Font
 from openpyxl.chart import PieChart3D, Reference
 import logging
 import copy
-import os
 
 class Xl_work:
     """Класс для создания неотформатированной версии отчета
@@ -25,18 +24,11 @@ class Xl_work:
         self.paths = [web_src, bit_src]
         self.pathDone = done_src
         self.error = ''
+        self.message = ''
         check1 = self.__correct_file(copy.deepcopy(self.paths[0]))
         check2 = self.__correct_file(copy.deepcopy(self.paths[1]))
-        xls_check1 = self.__not_xls(self.paths[0])
-        xls_check2 = self.__not_xls(self.paths[1])
-
-
         if check1 == 'web' and check2 == 'bitrix':
             self.error = ''
-        elif xls_check1 == 'xls error':
-            self.error = 'Файл выгрузки с веб-сист в формате xls, нужен xlsx'
-        elif xls_check2 == 'xls error':
-            self.error = 'Файл выгрузки с битрикса в формате xls, нужен xlsx'
         elif check1 == 'can not read' or check2 == 'can not read':
             if check1 == 'can not read': self.error += 'Файл web не читается'
             if check2 == 'can not read': self.error += 'Файл bitrix не читается'
@@ -50,26 +42,9 @@ class Xl_work:
             if check2 == 'unknown':
                 self.error += 'Файл bitrix не тот'
 
-    def __not_xls(self, path:str)->str:
-        """Проверяет, что загружен xls файл, а не xlsx
 
-        Args:
-            path (str): Путь к файлу
-
-        Returns:
-            str: Возвращает сообщение, которое выводится на экран пользователя,
-             если все хорошо - то пустую строку
-        """
-        ext = os.path.splitext(path)[1]
-
-        if ext == '.xls':
-            return 'xls error'
-        else:
-            return ''
-
-    def __correct_file(self, path:str) -> str:
+    def __correct_file(self, path) -> str:
         """Проверяет соответсвие столбцов в файле исходному шаблону.
-
         Args:
             path (str): путь либо объект проверяемого файла
 
@@ -95,6 +70,9 @@ class Xl_work:
     def __delete_unwanted_rows(self)->None:
         """Удаляет строки, не содержащие необходимой информации, например
         строки, дублирующие шапку страницы
+
+        :rtype: None
+        
         """
 
         wb = self.open_file(self.paths[1])
@@ -108,29 +86,45 @@ class Xl_work:
         wb.close()
 
     def __make_link_files(self) -> dict:
-        """Создет словрь из названий бюро, задействованных в ПЭ
+        """Создет словри из названийи описаний бюро, задействованных в ПЭ
 
-        Returns:
-            dict: Словарь программ ПЭ и бюро, занятых каждой конкретной программой
+        :rtype: dicts
+        
         """
-
         wb = self.open_file(self.paths[1])
         
         names = {}
+        discriptions = {}
         ws = wb.active
 
         for i, el in enumerate(ws["B"]):
             if el.value[:2] == 'ПЭ':
                 try:
-                    names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
+                    try:
+                        for each in el.value[4:].split('; '):
+                            names[each] = ws['U'+str(i+1)].value.split(', ')
+                    except:
+                        names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
                 except:
                     pass
+        for i, el in enumerate(ws["C"]):
+            try:
+                try:
+                    for each in el.value.split('; '):
+                        discriptions[each] = ws['U'+str(i+1)].value.split(', ')
+                except:
+                    discriptions[el.value] = ws['U'+str(i+1)].value.split(', ')
+            except:
+                pass
         wb.close()
-        return names
+        return (names, discriptions)
         
     def __create_sheets(self) -> None:
-        """Создает в листы с информацией для каждого бюро в итоговом файле
+        """ Создает в листы с информацией для каждого бюро в итоговом файле
         При этом, передаются только незавершенные записи о ПЭ 
+
+        :rtype:None
+
         """
         wb_bit = self.open_file(self.paths[1])
         wb_web = self.open_file(self.paths[0])
@@ -182,13 +176,13 @@ class Xl_work:
         
         return amount
 
-    def __spread_on_sheets(self, links: dict) -> None:
+    def __spread_on_sheets(self, links) -> None:
         """Переносит информацию из веб-системы на лист соответсвующего бюро в итоговом файле
 
         Args:
             links (dict): словарь ключей-названий бюро
         """
-
+        linksn, linksd = links
         wb_web = self.open_file(self.paths[0])
         wb_done = self.open_file(self.pathDone)
 
@@ -198,10 +192,21 @@ class Xl_work:
             if first:
                 first = False
                 continue
-            knots = el.value.split('; ')
+            knots = el.value.replace('  ', ' ').split('; ')
             for each in knots:
-                if each in links.keys():
-                    for byros in links[each]:
+                if each in linksn.keys():
+                    for byros in linksn[each]:
+                        our_row = []
+                        for j, cell in enumerate(ws_web[i+1]):
+                            if j == 5:
+                                our_row.append(each)
+                            elif j == ws_web.max_column-1:
+                                continue
+                            else:
+                                our_row.append(cell.value)
+                        wb_done[byros[5:].capitalize()].append(our_row)
+                elif each in linksd.keys():
+                    for byros in linksd[each]:
                         our_row = []
                         for j, cell in enumerate(ws_web[i+1]):
                             if j == 5:
@@ -235,7 +240,7 @@ class Xl_work:
             sheet (_type_, optional): Лист в открытом файле. Defaults to None.
 
         Returns:
-            int: Число уникальных машин
+            int: Число машин
         """
         if sheet:
             unique_elems = []
@@ -335,11 +340,11 @@ class Xl_work:
         wb.save(self.pathDone)
         wb.close()
     
-    def open_file(self, path:str):
+    def open_file(self, path):
         """Открывает файл
 
         Args:
-            path (str): путь к файлу
+            path (_type_): путь к файлу
 
         Returns:
             _type_: Excel WorkBook
@@ -354,6 +359,8 @@ class Xl_work:
     def start(self) -> None:
         """ Запускает весь процесс совмещения двух файлов, перед этим выполняя проверку на ошибки при добавлении исходных файлов
         в итогоговом файле распределяяет информацию по листам с бюро и создает лист статистики
+
+        :rtype: None
         
         """
         self.__delete_unwanted_rows()
