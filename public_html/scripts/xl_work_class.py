@@ -13,16 +13,13 @@ class Xl_work:
     """
     def __init__(self, web_src: str, bit_src: str, done_src: str) -> None:
         """Создает атрибуты класса Xl_work
+        Также проверяет и классифицирует ошибки при загрузке фала пользователем, что в дальнейшем
+        определяет выводимое на экран сообщение после ответа сервера
 
-        :param web_src: путь к Excel файлу выгрузки с веб-системы, defaults to None
-        :type web_src: str
-
-        :param bit_src: путь к Excel файлу выгрузки с Битрикс24, defaults to None
-        :type bit_src: str
-
-        :param done_src: путь к итоговому файлу, defaults to None
-
-        :return None
+        Args:
+            web_src (str):  путь к Excel файлу выгрузки с веб-системы, defaults to None
+            bit_src (str): путь к Excel файлу выгрузки с Битрикс24, defaults to None
+            done_src (str):  путь к итоговому файлу, defaults to None
         """
         self.paths = [web_src, bit_src]
         self.pathDone = done_src
@@ -48,10 +45,12 @@ class Xl_work:
 
     def __correct_file(self, path) -> str:
         """Проверяет соответсвие столбцов в файле исходному шаблону.
-        :param path: путь либо объект проверяемого файла
-        :type path: str or FileTypeObject
-        :return: возвращает строку с предположительным названием файла.
-        :rtype: str
+        Args:
+            path (str): путь либо объект проверяемого файла
+
+        Returns:
+            str: Возвращает к какому из 3 типов принадлежит загруженный отчетов - из Битрикса
+            из Веб-системы или неизвестного происхождения
         """
         wb = self.open_file(path)
         if wb == False:
@@ -87,24 +86,38 @@ class Xl_work:
         wb.close()
 
     def __make_link_files(self) -> dict:
-        """Создет словрь из названий бюро, задействованных в ПЭ
+        """Создет словри из названийи описаний бюро, задействованных в ПЭ
 
-        :rtype: dict
+        :rtype: dicts
         
         """
         wb = self.open_file(self.paths[1])
         
         names = {}
+        discriptions = {}
         ws = wb.active
 
         for i, el in enumerate(ws["B"]):
             if el.value[:2] == 'ПЭ':
                 try:
-                    names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
+                    try:
+                        for each in el.value[4:].split('; '):
+                            names[each] = ws['U'+str(i+1)].value.split(', ')
+                    except:
+                        names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
                 except:
                     pass
+        for i, el in enumerate(ws["C"]):
+            try:
+                try:
+                    for each in el.value.split('; '):
+                        discriptions[each] = ws['U'+str(i+1)].value.split(', ')
+                except:
+                    discriptions[el.value] = ws['U'+str(i+1)].value.split(', ')
+            except:
+                pass
         wb.close()
-        return names
+        return (names, discriptions)
         
     def __create_sheets(self) -> None:
         """ Создает в листы с информацией для каждого бюро в итоговом файле
@@ -137,8 +150,9 @@ class Xl_work:
     
     def __count_tasks_in_departments(self)->dict:
         """Создает словарь с названиями всех бюро и количество программ ПЭ в каждом из них
-        return: Словарь с названиями всех бюро и количество программ ПЭ в каждом из них
-        rtype: dict
+
+        Returns:
+            dict: Словарь с названиями всех бюро и количество программ ПЭ в каждом из них
         """
 
         wb = self.open_file(self.paths[1])
@@ -162,13 +176,13 @@ class Xl_work:
         
         return amount
 
-    def __spread_on_sheets(self, links: dict) -> None:
+    def __spread_on_sheets(self, links) -> None:
         """Переносит информацию из веб-системы на лист соответсвующего бюро в итоговом файле
 
-        :param links: словарь ключей-названий бюро
-        :type links: dict
-        
+        Args:
+            links (dict): словарь ключей-названий бюро
         """
+        linksn, linksd = links
         wb_web = self.open_file(self.paths[0])
         wb_done = self.open_file(self.pathDone)
 
@@ -178,10 +192,21 @@ class Xl_work:
             if first:
                 first = False
                 continue
-            knots = el.value.split('; ')
+            knots = el.value.replace('  ', ' ').split('; ')
             for each in knots:
-                if each in links.keys():
-                    for byros in links[each]:
+                if each in linksn.keys():
+                    for byros in linksn[each]:
+                        our_row = []
+                        for j, cell in enumerate(ws_web[i+1]):
+                            if j == 5:
+                                our_row.append(each)
+                            elif j == ws_web.max_column-1:
+                                continue
+                            else:
+                                our_row.append(cell.value)
+                        wb_done[byros[5:].capitalize()].append(our_row)
+                elif each in linksd.keys():
+                    for byros in linksd[each]:
                         our_row = []
                         for j, cell in enumerate(ws_web[i+1]):
                             if j == 5:
@@ -244,7 +269,8 @@ class Xl_work:
         список всех бюро с количеством проектов ПЭ в каждом из них на основе словаря,
         полученного из функции __count_tasks_in_departments и создает круговую диграмму распределения проектов ПЭ по бюро
 
-        :rtype: None
+        Returns:
+            None
         
         """
 

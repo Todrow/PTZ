@@ -9,6 +9,7 @@
             function done(result){
                 console.log(result.message)
                 if (result.error == ''){
+                    // Выолняет этот код если файл успешно обработан без оишбок
                     document.getElementById('ok_btn').href="download/"+result.id;
                     document.getElementById("loader").style.display="none";
                     document.getElementById("message-main").textContent = '';
@@ -17,15 +18,19 @@
                     document.getElementById("ok_btn").style.display = 'block';
                 }
                 else{
+                    // Выводит текст ошибки
+                    // Подробнее в описании функции error
                     error(result.error)
                 }
             }
             function error(err) {
+                // Убирает анимацию загрузки и выводит текст ошибки в заголовок
                 document.getElementById("loader").style.display="none";
                 document.getElementById("message-header").textContent = err;
                 document.getElementById("message-main").textContent = 'Попробуйте снова'
             }
             function submitForm(event) {
+                // Выводит всплывающее окно при отправке формы
                 event.preventDefault();
                 document.getElementById("popup-overlay").style.display = "block";
                 document.getElementById("loader").style.display="block";
@@ -35,6 +40,8 @@
                 document.getElementById("ok_btn").style.display = 'none';
 
                 fetch('/merge_files/', {
+                    // Отправляет файлы на сервер
+                    // через POST запрос
                     method: 'POST',
                     body: new FormData(document.getElementById("myForm")),
                     headers: {

@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+"""Models, отвечает за хранение файлов и работу с БД
+"""
+
 def user_directory_path(user, filename):
     return 'uploads/user_{0}/{1}'.format(user, filename)
 
