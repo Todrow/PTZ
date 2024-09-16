@@ -21,10 +21,20 @@ class Xl_work:
             bit_src (str): путь к Excel файлу выгрузки с Битрикс24, defaults to None
             done_src (str):  путь к итоговому файлу, defaults to None
         """
+        self._B24_TITLES = {
+            'Название': 'B',
+            'Описание': 'C',
+            'Бюро': 'U',
+            'Статус': 'J'
+            }
+        self._WEB_TITLES = {
+            'Название': 'F'
+        }
         self.paths = [web_src, bit_src]
         self.pathDone = done_src
         self.error = ''
         self.message = ''
+        self.b24 = dict()
         check1 = self.__correct_file(copy.deepcopy(self.paths[0]))
         check2 = self.__correct_file(copy.deepcopy(self.paths[1]))
         if check1 == 'web' and check2 == 'bitrix':
@@ -42,6 +52,22 @@ class Xl_work:
             if check2 == 'unknown':
                 self.error += 'Файл bitrix не тот'
 
+    def __make_dict_b24(self, sheet) -> dict:
+        buros = {}
+
+        for i, el in enumerate(sheet[self._B24_TITLES['Название']]):
+            if el.value[:2] == 'ПЭ':
+                try:
+                    for buro in sheet[self._B24_TITLES['Бюро']+str(i+1)].value.split(', '):
+                        buro = buro[5:].capitalize()
+                        if buro in buros.keys():
+                            buros[buro].add({'name': {el.value[4:], self._B24_TITLES['Описание'].value}, 'status': self._B24_TITLES['Статус'].value != 'Завершена'})
+                        else:
+                            buros[buro] = set()
+                            buros[buro].add({'name': {el.value[4:], self._B24_TITLES['Описание'].value}, 'status': self._B24_TITLES['Статус'].value != 'Завершена'})
+                except:
+                    pass
+        return buros
 
     def __correct_file(self, path) -> str:
         """Проверяет соответсвие столбцов в файле исходному шаблону.
@@ -57,7 +83,8 @@ class Xl_work:
             return 'can not read'
         else:
             sheet = wb.active
-            if sheet.cell(row=1, column=2).value == 'Название':
+            if sheet[self._B24_TITLES['Название']+'1'].value == 'Название':
+                self.b24 = self.__make_dict_b24(sheet)
                 wb.close()
                 return 'bitrix'
             elif sheet.cell(row=1, column=7).value == 'Опытный узел':
@@ -84,40 +111,6 @@ class Xl_work:
 
         wb.save(self.paths[1])
         wb.close()
-
-    def __make_link_files(self) -> dict:
-        """Создет словри из названийи описаний бюро, задействованных в ПЭ
-
-        :rtype: dicts
-        
-        """
-        wb = self.open_file(self.paths[1])
-        
-        names = {}
-        discriptions = {}
-        ws = wb.active
-
-        for i, el in enumerate(ws["B"]):
-            if el.value[:2] == 'ПЭ':
-                try:
-                    try:
-                        for each in el.value[4:].split('; '):
-                            names[each] = ws['U'+str(i+1)].value.split(', ')
-                    except:
-                        names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
-                except:
-                    pass
-        for i, el in enumerate(ws["C"]):
-            try:
-                try:
-                    for each in el.value.split('; '):
-                        discriptions[each] = ws['U'+str(i+1)].value.split(', ')
-                except:
-                    discriptions[el.value] = ws['U'+str(i+1)].value.split(', ')
-            except:
-                pass
-        wb.close()
-        return (names, discriptions)
         
     def __create_sheets(self) -> None:
         """ Создает в листы с информацией для каждого бюро в итоговом файле
@@ -126,27 +119,15 @@ class Xl_work:
         :rtype:None
 
         """
-        wb_bit = self.open_file(self.paths[1])
         wb_web = self.open_file(self.paths[0])
         
         ws_web = wb_web.active
-        ws_bit = wb_bit.active
-        for i in range(1, ws_bit.max_row):
-            task = ws_bit.cell(column=2, row=i).value
-            if task[:2] == 'ПЭ' and ws_bit.cell(column=10, row=i).value != 'Завершена':
-                try:
-                    tags = ws_bit.cell(column=21, row=i).value.split(', ')
-                    for each in tags:
-                        each = each[5:].capitalize()
-                        if each in wb_web.sheetnames:
-                            continue
-                        else: wb_web.create_sheet(each)
-                except:
-                    pass
+        for buro in self.b24.keys():
+            wb_web.create_sheet(buro)
+        
         wb_web.create_sheet('Конфликты')
         wb_web.save(self.pathDone)
         wb_web.close()
-        wb_bit.close()
     
     def __count_tasks_in_departments(self)->dict:
         """Создает словарь с названиями всех бюро и количество программ ПЭ в каждом из них
@@ -155,77 +136,54 @@ class Xl_work:
             dict: Словарь с названиями всех бюро и количество программ ПЭ в каждом из них
         """
 
-        wb = self.open_file(self.paths[1])
-        sheet = wb.active
         amount = {}
-        for i in range(1, sheet.max_row):
-            task_name = sheet.cell(column=2, row=i).value
-            first_two = task_name[:2]
-            if (first_two == 'ПЭ'):
-                if (sheet.cell(column=10, row=i).value != 'Завершена'):
-                        tag = sheet.cell(column=21, row=i).value
-                        try:
-                            tags = tag.split(', ')
-                        except:
-                            pass
-                        for each in tags:
-                            if (each in amount):
-                                amount[each] += 1
-                            else:
-                                amount[each] = 1
+        for buro, names in self.b24.items():
+            amount[buro] = len(names)//2
         
         return amount
 
-    def __spread_on_sheets(self, links) -> None:
+    def __spread_on_sheets(self) -> None:
         """Переносит информацию из веб-системы на лист соответсвующего бюро в итоговом файле
 
         Args:
             links (dict): словарь ключей-названий бюро
         """
-        linksn, linksd = links
         wb_web = self.open_file(self.paths[0])
         wb_done = self.open_file(self.pathDone)
 
         ws_web = wb_web.active
-        first = True
-        for i, el in enumerate(ws_web["F"]):
-            if first:
-                first = False
+        web_names_dict = {}
+        for i_row, names in enumerate(ws_web[self._WEB_TITLES['Название']]):
+
+            names = names.value.replace('  ', ' ')
+            if i_row == 0:
                 continue
-            knots = el.value.replace('  ', ' ').split('; ')
-            for each in knots:
-                if each in linksn.keys():
-                    for byros in linksn[each]:
-                        our_row = []
-                        for j, cell in enumerate(ws_web[i+1]):
-                            if j == 5:
-                                our_row.append(each)
-                            elif j == ws_web.max_column-1:
-                                continue
-                            else:
-                                our_row.append(cell.value)
-                        wb_done[byros[5:].capitalize()].append(our_row)
-                elif each in linksd.keys():
-                    for byros in linksd[each]:
-                        our_row = []
-                        for j, cell in enumerate(ws_web[i+1]):
-                            if j == 5:
-                                our_row.append(each)
-                            elif j == ws_web.max_column-1:
-                                continue
-                            else:
-                                our_row.append(cell.value)
-                        wb_done[byros[5:].capitalize()].append(our_row)
+
+            for name in names.split('; '):
+                # Формируем строку Excel в массив
+                our_row = []
+                for i_column, cell in enumerate(ws_web[i_row+1]):
+                    if i_column == 5: # Наше название
+                        our_row.append(name)
+                        continue
+                    if i_column == ws_web.max_column-1: # Бюро обрезаем
+                        continue
+                    our_row.append(cell.value)
+                if name in web_names_dict.keys():
+                    web_names_dict[name].add(our_row)
                 else:
-                    our_row = []
-                    for j, cell in enumerate(ws_web[i+1]):
-                        if j == 5:
-                            our_row.append(each)
-                        elif j == ws_web.max_column:
-                            continue
-                        else:
-                            our_row.append(cell.value)
-                    wb_done['Конфликты'].append(our_row)
+                    web_names_dict[name] = set()
+                    web_names_dict[name].add(our_row)
+
+        for sheet in wb_web.sheetnames:
+            for programm in filter(lambda each: each['status'] == True, self.b24[sheet]):
+                for name in programm['name']:
+                    try:
+                        for row in web_names_dict[name]:
+                            wb_done[sheet].append(row)
+                    except:
+                        wb_done['Конфликты'].append(our_row)
+
         wb_done.save(self.pathDone)
         wb_done.close()
         wb_web.close()
@@ -365,5 +323,5 @@ class Xl_work:
         """
         self.__delete_unwanted_rows()
         self.__create_sheets()
-        self.__spread_on_sheets(self.__make_link_files())
+        self.__spread_on_sheets()
         self.__stat()
