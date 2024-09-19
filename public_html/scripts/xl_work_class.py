@@ -102,15 +102,15 @@ class Xl_work:
                 try:
                     try:
                         for each in el.value[4:].split('; '):
-                            names[each] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                            names[each] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     except:
-                        names[el.value[4:]] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                        names[el.value[4:]] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     el = ws["C"+str(i)]
                     try:
                         for each in el.value.split('; '):
-                            discriptions[each] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                            discriptions[each] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     except:
-                        discriptions[el.value] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                        discriptions[el.value] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                 except:
                     pass
         wb.close()
@@ -184,14 +184,18 @@ class Xl_work:
         wb_done = self.open_file(self.pathDone)
 
         ws_web = wb_web.active
-        for i, el in enumerate(ws_web["F"][1:], 1):
+        first = True
+        for i, el in enumerate(ws_web["F"]):
+            if first:
+                first = False
+                continue
             knots = el.value.replace('  ', ' ').split('; ')
             for each in knots:
                 if each in linksn.keys():
                     if linksn[each]['status']:
                         for byros in linksn[each]['buro']:
                             our_row = []
-                            for j, cell in enumerate(ws_web[i]):
+                            for j, cell in enumerate(ws_web[i+1]):
                                 if j == 5:
                                     our_row.append(each)
                                 elif j == ws_web.max_column-1:
@@ -199,13 +203,11 @@ class Xl_work:
                                 else:
                                     our_row.append(cell.value)
                             wb_done[byros[5:].capitalize()].append(our_row)
-                    else:
-                        wb_done['Data'].delete_rows(i, amount=1)
                 elif each in linksd.keys():
                     if linksd[each]['status']:
                         for byros in linksd[each]['buro']:
                             our_row = []
-                            for j, cell in enumerate(ws_web[i]):
+                            for j, cell in enumerate(ws_web[i+1]):
                                 if j == 5:
                                     our_row.append(each)
                                 elif j == ws_web.max_column-1:
@@ -213,11 +215,9 @@ class Xl_work:
                                 else:
                                     our_row.append(cell.value)
                             wb_done[byros[5:].capitalize()].append(our_row)
-                    else:
-                        wb_done['Data'].delete_rows(i, amount=1)
                 else:
                     our_row = []
-                    for j, cell in enumerate(ws_web[i]):
+                    for j, cell in enumerate(ws_web[i+1]):
                         if j == 5:
                             our_row.append(each)
                         elif j == ws_web.max_column:
@@ -354,6 +354,11 @@ class Xl_work:
         except:
             return False
         return wb
+
+    def _message(self, message) -> None:
+        message = str(message)
+        if message not in self.message:
+            self.message += message + '|||'
 
     def start(self) -> None:
         """ Запускает весь процесс совмещения двух файлов, перед этим выполняя проверку на ошибки при добавлении исходных файлов
