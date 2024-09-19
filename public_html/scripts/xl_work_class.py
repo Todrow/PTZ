@@ -61,11 +61,12 @@ class Xl_work:
                     for buro in sheet[self._B24_TITLES['Бюро']+str(i+1)].value.split(', '):
                         buro = buro[5:].capitalize()
                         if buro in buros.keys():
-                            buros[buro].add({'name': {el.value[4:], self._B24_TITLES['Описание'].value}, 'status': self._B24_TITLES['Статус'].value != 'Завершена'})
+                            buros[buro].append({'name': (el.value[4:], sheet[self._B24_TITLES['Описание']+str(i+1)].value), 'status': sheet[self._B24_TITLES['Статус']+str(i+1)].value != 'Завершена'})
                         else:
-                            buros[buro] = set()
-                            buros[buro].add({'name': {el.value[4:], self._B24_TITLES['Описание'].value}, 'status': self._B24_TITLES['Статус'].value != 'Завершена'})
-                except:
+                            buros[buro] = list()
+                            buros[buro].append({'name': (el.value[4:], sheet[self._B24_TITLES['Описание']+str(i+1)].value), 'status': sheet[self._B24_TITLES['Статус']+str(i+1)].value != 'Завершена'})
+                except Exception as e:
+                    # self._message(e)
                     pass
         return buros
 
@@ -170,19 +171,25 @@ class Xl_work:
                         continue
                     our_row.append(cell.value)
                 if name in web_names_dict.keys():
-                    web_names_dict[name].add(our_row)
+                    web_names_dict[name].append(our_row)
                 else:
-                    web_names_dict[name] = set()
-                    web_names_dict[name].add(our_row)
-
-        for sheet in wb_web.sheetnames:
+                    web_names_dict[name] = [our_row]
+        schet = 0
+        for sheet in wb_done.sheetnames[1:-1]:
             for programm in filter(lambda each: each['status'] == True, self.b24[sheet]):
                 for name in programm['name']:
-                    try:
+                    if name in web_names_dict.keys():
                         for row in web_names_dict[name]:
                             wb_done[sheet].append(row)
-                    except:
-                        wb_done['Конфликты'].append(our_row)
+                        schet += 1
+                        break
+                else:
+                    # self._message('start')
+                    # self._message(list(each for each in programm['name']))
+                    # wb_done['Конфликты'].append(our_row)
+                    pass
+        self._message(schet)
+        self._message(len(list(web_names_dict.keys())))
 
         wb_done.save(self.pathDone)
         wb_done.close()
@@ -313,6 +320,11 @@ class Xl_work:
         except:
             return False
         return wb
+    
+    def _message(self, message: str) -> None:
+        message = str(message)
+        if message not in self.message:
+            self.message += message + '|||'
 
     def start(self) -> None:
         """ Запускает весь процесс совмещения двух файлов, перед этим выполняя проверку на ошибки при добавлении исходных файлов
