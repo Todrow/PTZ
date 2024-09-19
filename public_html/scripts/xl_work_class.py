@@ -97,25 +97,22 @@ class Xl_work:
         discriptions = {}
         ws = wb.active
 
-        for i, el in enumerate(ws["B"]):
+        for i, el in enumerate(ws["B"], 1):
             if el.value[:2] == 'ПЭ':
                 try:
                     try:
                         for each in el.value[4:].split('; '):
-                            names[each] = ws['U'+str(i+1)].value.split(', ')
+                            names[each] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
                     except:
-                        names[el.value[4:]] = ws['U'+str(i+1)].value.split(', ')
+                        names[el.value[4:]] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                    el = ws["C"+str(i)]
+                    try:
+                        for each in el.value.split('; '):
+                            discriptions[each] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                    except:
+                        discriptions[el.value] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
                 except:
                     pass
-        for i, el in enumerate(ws["C"]):
-            try:
-                try:
-                    for each in el.value.split('; '):
-                        discriptions[each] = ws['U'+str(i+1)].value.split(', ')
-                except:
-                    discriptions[el.value] = ws['U'+str(i+1)].value.split(', ')
-            except:
-                pass
         wb.close()
         return (names, discriptions)
         
@@ -187,38 +184,40 @@ class Xl_work:
         wb_done = self.open_file(self.pathDone)
 
         ws_web = wb_web.active
-        first = True
-        for i, el in enumerate(ws_web["F"]):
-            if first:
-                first = False
-                continue
+        for i, el in enumerate(ws_web["F"][1:], 1):
             knots = el.value.replace('  ', ' ').split('; ')
             for each in knots:
                 if each in linksn.keys():
-                    for byros in linksn[each]:
-                        our_row = []
-                        for j, cell in enumerate(ws_web[i+1]):
-                            if j == 5:
-                                our_row.append(each)
-                            elif j == ws_web.max_column-1:
-                                continue
-                            else:
-                                our_row.append(cell.value)
-                        wb_done[byros[5:].capitalize()].append(our_row)
+                    if linksn[each]['status']:
+                        for byros in linksn[each]['buro']:
+                            our_row = []
+                            for j, cell in enumerate(ws_web[i]):
+                                if j == 5:
+                                    our_row.append(each)
+                                elif j == ws_web.max_column-1:
+                                    continue
+                                else:
+                                    our_row.append(cell.value)
+                            wb_done[byros[5:].capitalize()].append(our_row)
+                    else:
+                        wb_done['Data'].delete_rows(i, amount=1)
                 elif each in linksd.keys():
-                    for byros in linksd[each]:
-                        our_row = []
-                        for j, cell in enumerate(ws_web[i+1]):
-                            if j == 5:
-                                our_row.append(each)
-                            elif j == ws_web.max_column-1:
-                                continue
-                            else:
-                                our_row.append(cell.value)
-                        wb_done[byros[5:].capitalize()].append(our_row)
+                    if linksd[each]['status']:
+                        for byros in linksd[each]['buro']:
+                            our_row = []
+                            for j, cell in enumerate(ws_web[i]):
+                                if j == 5:
+                                    our_row.append(each)
+                                elif j == ws_web.max_column-1:
+                                    continue
+                                else:
+                                    our_row.append(cell.value)
+                            wb_done[byros[5:].capitalize()].append(our_row)
+                    else:
+                        wb_done['Data'].delete_rows(i, amount=1)
                 else:
                     our_row = []
-                    for j, cell in enumerate(ws_web[i+1]):
+                    for j, cell in enumerate(ws_web[i]):
                         if j == 5:
                             our_row.append(each)
                         elif j == ws_web.max_column:
