@@ -1,0 +1,300 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+
+}
+
+.card {
+    position: relative;
+    width: 400px;
+    height: 500px;
+    border-radius: 15px;
+    box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.1);
+    margin-left: 100px;
+    margin-right: 100px;
+    padding-left: 0px;
+    display: grid;
+    grid-template-rows: 1fr;
+    border: 2px solid #e5e5e5;
+    transform: scale(1.25);
+}
+
+.btn {
+    background-color: #ce2a2e;
+    position: relative;
+    left: 60%;
+    bottom: 1%;
+    color: white;
+    border: 1px solid #e5e5e5;
+    height: 50px;
+    width: 150px;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #e6e6e6;
+    color: black;
+}
+
+.btn:active {
+    background-color: #c1c0c0;
+}
+
+.btn:disabled {
+    background-color: #e6e6e6;
+    color: #c1c0c0;
+}
+
+.btn:disabled:hover {
+    background-color: #e6e6e6;
+    color: #c1c0c0;
+}
+
+.btn:disabled:active {
+    background-color: #e6e6e6;
+    color: #c1c0c0;
+}
+
+.input-file {
+    position: relative;
+    top: 0px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    display: inline-block;
+    align-self: center;
+    width: 370px;
+    margin-left: 15px;
+    margin-bottom: 50px;
+
+}
+
+.input-file-text {
+    padding: 0px 10px;
+    line-height: 40px;
+    text-align: left;
+    height: 40px;
+    display: block;
+    float: left;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width:thin;
+    white-space: nowrap;
+    width: 65%;
+    border-radius: 10px 0px 0 10px;
+    border: 1px solid #e5e5e5;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.1);
+}
+
+.input-file-info {
+    padding: 0px 10px;
+    line-height: 40px;
+    text-align: left;
+    height: 40px;
+    display: block;
+    float: left;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width:thin;
+    white-space: nowrap;
+    width: 100%;
+    border-radius: 10px 10px 10px 10px;
+    border: 1px solid #e5e5e5;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.1);
+}
+
+.input-file-btn {
+    position: relative;
+    width: 35%;
+    display: inline-block;
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    vertical-align: middle;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    border-radius: 0 10px 10px 0;
+    background-color: #ce2a2e;
+    line-height: 22px;
+    height: 40px;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    border: none;
+    margin: 0;
+    transition: background-color 0.2s;
+    box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.input-file input[type=file] {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    display: block;
+    width: 0;
+    height: 0;
+}
+
+.input-file:hover .input-file-btn {
+    background-color: #e6e6e6;
+    color: black;
+}
+
+.input-file:active .input-file-btn {
+    background-color: #c1c0c0;
+}
+
+.input-file input[type=file]:disabled+.input-file-btn {
+    background-color: #eee;
+}
+
+h1 {
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0px;
+}
+
+img {
+    position: absolute;
+    scale: 0.15;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+#popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+}
+
+#popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0px 20px;
+    justify-content: center;
+    display: inline;
+    align-items: center;
+    display: flex;
+    grid-template-rows: 1fr;
+    height: 300px;
+    width: 500px;
+    align-content: space-around;
+    flex-direction: column;
+}
+
+.message-main {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    text-align: center;
+}
+
+.message-header {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+}
+.ok_btn {
+    background-color: #ce2a2e;
+    position: relative;
+    color: white;
+    bottom: -20%;
+    border: 1px solid #e5e5e5;
+    height: auto;
+    width: 110px;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    align-items: center;
+    display: block;
+    
+}
+
+.ok_btn:hover {
+    background-color: #e6e6e6;
+    color: black;
+}
+
+.ok_btn:active {
+    background-color: #c1c0c0;
+}
+
+.ok_btn:disabled {
+    background-color: #e6e6e6;
+    color: #c1c0c0;
+}
+
+
+
+.loader {
+    border: 16px solid #c1c0c0;
+    border-top: 16px solid #ce2a2e;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    justify-self: center;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.result {
+    font-size: 14px;
+    display: flex;
+    color: #000000;
+    justify-self: center;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
