@@ -2,9 +2,9 @@
 <html lang="ru">
     <head>
         {% load static %}
-        <link rel="stylesheet" href="{% static 'PTZ1.css' %}">
+        <link rel="stylesheet" href="{% static "PTZ1.css" %}">
         <link rel="shortcut icon" href="{% static "13452_0_.jpg" %}">
-        <title>Обработка данных</title>
+        <title>Форматирование отчета</title>
         <script>
             function done(result){
                 // Функция, меняющая всплывающее окно при получении ответа от сервера
@@ -39,7 +39,7 @@
                 document.getElementById("exit_button").style.display="block";
                 document.getElementById("ok_btn").style.display = 'none';
 
-                fetch('/merge_files/', {
+                fetch('/format/', {
                     // Отправляет файлы на сервер
                     // через POST запрос
                     method: 'POST',
@@ -55,18 +55,13 @@
     
     <body>
         <div class="card">
-            <h1>Загрузите файлы</h1>
+            <h1>Загрузите файл</h1>
             <form method="POST" enctype="multipart/form-data" id="myForm">
                 {% csrf_token %}
                 <label class="input-file">
                         <span class="input-file-text" type="text" id="fileName1"></span>
-                        <input type="file" name="file_bitrix" id="fileInput1" oninput="checkIn()">
-                        <span class="input-file-btn">Битрикс</span>
-                </label>
-                <label class="input-file">
-                    <span class="input-file-text" type="text" id="fileName2"></span>
-                    <input type="file" name="file_web" id="fileInput2" oninput="checkIn()">        
-                    <span class="input-file-btn">Веб система</span>
+                        <input type="file" name="file" id="fileInput1" oninput="checkIn()">
+                        <span class="input-file-btn">Файл</span>
                 </label>
                 <input class="btn" type="submit" value="Сохранить" id="send" disabled></input>
             </form>  
@@ -78,10 +73,10 @@
                 <div class="loader" id="loader"></div>
                 <div style="justify-self: center;">
                     <button id="exit_button" class="ok_btn" style="right: 0%; justify-content: center; align-content: center;">Отмена</button>
-                    <a id="ok_btn" class="ok_btn" style="left: 0%; display: none;" href='download'>Скачать</a>
+                    <a id="ok_btn" class="ok_btn" style="left: 0%; display: none;">Скачать</a>
                 </div>
             </div>
         </div>
-        <script src="{% static "PTZ1.js" %}"></script>
+        <script src="{% static "format_js.js" %}"></script>
     </body>
 </html>

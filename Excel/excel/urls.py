@@ -21,6 +21,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('merge_files/', include('merge_files.urls')),
+    path('format/', include('format_file.urls')),
     path('', RedirectView.as_view(url='/merge_files/', permanent=True)),
 ]
 # Используйте static() чтобы добавить соотношения для статических файлов
