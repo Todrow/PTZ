@@ -81,6 +81,20 @@ def index(request):
     else:
         return render(request, 'index.html')
 
+
+def add_data_b24(request):
+
+    """Добавление в БД данных из Битрикс24 (из файла xl)
+
+        Args:
+            request (_type_): Файл Битрикс .xlsx формата
+
+        Returns:
+            _type_: Статус операции
+    """
+
+
+
 def download_file(request, id):
     """Возвращает файл при нажатии на ссылку 'Скачать'
 
