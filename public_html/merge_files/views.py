@@ -8,6 +8,7 @@ import os
 # Project classes
 from scripts.exlWrapper import ExcelWrapper
 from scripts.xl_work_class import Xl_work
+from .models import ModuleSU
 
 """Views отвечает за принятие запросов, обработку данных из них и возрат ответов пользователю
 """
@@ -92,7 +93,8 @@ def add_data_b24(request):
         Returns:
             _type_: Статус операции
     """
-
+    modules = ModuleSU.objects.all()
+    modules = modules.filter(title)
 
 
 def download_file(request, id):

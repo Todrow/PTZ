@@ -5,14 +5,11 @@ from django.contrib.auth.models import User
 """
 
 
-def user_directory_path(user, filename):
-    return 'uploads/user_{0}/{1}'.format(user, filename)
-
 
 # Модель с информацией узлов ПЭ
 
 
-class moduleSU(models.Model):
+class ModuleSU(models.Model):
     title = models.TextField(primary_key=True)
     status = models.BooleanField()
     bureau = models.ManyToManyField(to="Bureau")
@@ -22,4 +19,4 @@ class moduleSU(models.Model):
 
 class Bureau(models.Model):
     title = models.CharField(max_length=100, primary_key=True)
-    modules = models.ManyToManyField(to=moduleSU)
+    modules = models.ManyToManyField(to=ModuleSU)
