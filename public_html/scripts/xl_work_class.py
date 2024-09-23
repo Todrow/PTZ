@@ -4,13 +4,15 @@ from openpyxl.chart import PieChart3D, Reference
 import logging
 import copy
 
+
 class Xl_work:
     """Класс для создания неотформатированной версии отчета
         обладает публичными методами:
         open_file, для загрузки Excel файла в openpyxl
         start, для создания структуры итоговой версии отчета
-    
+
     """
+
     def __init__(self, web_src: str, bit_src: str, done_src: str) -> None:
         """Создает атрибуты класса Xl_work
         Также проверяет и классифицирует ошибки при загрузке фала пользователем, что в дальнейшем
@@ -30,8 +32,10 @@ class Xl_work:
         if check1 == 'web' and check2 == 'bitrix':
             self.error = ''
         elif check1 == 'can not read' or check2 == 'can not read':
-            if check1 == 'can not read': self.error += 'Файл web не читается'
-            if check2 == 'can not read': self.error += 'Файл bitrix не читается'
+            if check1 == 'can not read':
+                self.error += 'Файл web не читается'
+            if check2 == 'can not read':
+                self.error += 'Файл bitrix не читается'
         elif check1 == check2:
             self.error = 'Файлы одинаковы'
         elif check2 == 'web' and check1 == 'bitrix':
@@ -41,7 +45,6 @@ class Xl_work:
                 self.error += 'Файл web не тот'
             if check2 == 'unknown':
                 self.error += 'Файл bitrix не тот'
-
 
     def __correct_file(self, path) -> str:
         """Проверяет соответсвие столбцов в файле исходному шаблону.
@@ -67,12 +70,12 @@ class Xl_work:
                 wb.close()
                 return 'unknown'
 
-    def __delete_unwanted_rows(self)->None:
+    def __delete_unwanted_rows(self) -> None:
         """Удаляет строки, не содержащие необходимой информации, например
         строки, дублирующие шапку страницы
 
         :rtype: None
-        
+
         """
 
         wb = self.open_file(self.paths[1])
@@ -89,10 +92,10 @@ class Xl_work:
         """Создет словри из названийи описаний бюро, задействованных в ПЭ
 
         :rtype: dicts
-        
+
         """
         wb = self.open_file(self.paths[1])
-        
+
         names = {}
         discriptions = {}
         ws = wb.active
@@ -102,20 +105,24 @@ class Xl_work:
                 try:
                     try:
                         for each in el.value[4:].split('; '):
-                            names[each] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                            names[each] = {
+                                'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
                     except:
-                        names[el.value[4:]] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                        names[el.value[4:]] = {
+                            'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
                     el = ws["C"+str(i)]
                     try:
                         for each in el.value.split('; '):
-                            discriptions[each] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                            discriptions[each] = {
+                                'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
                     except:
-                        discriptions[el.value] = {'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
+                        discriptions[el.value] = {
+                            'status': ws["J"+str(i)] != 'Завершена', 'buro:': ws['U'+str(i)].value.split(', ')}
                 except:
                     pass
         wb.close()
         return (names, discriptions)
-        
+
     def __create_sheets(self) -> None:
         """ Создает в листы с информацией для каждого бюро в итоговом файле
         При этом, передаются только незавершенные записи о ПЭ 
@@ -125,7 +132,7 @@ class Xl_work:
         """
         wb_bit = self.open_file(self.paths[1])
         wb_web = self.open_file(self.paths[0])
-        
+
         ws_web = wb_web.active
         ws_bit = wb_bit.active
         for i in range(1, ws_bit.max_row):
@@ -137,15 +144,16 @@ class Xl_work:
                         each = each[5:].capitalize()
                         if each in wb_web.sheetnames:
                             continue
-                        else: wb_web.create_sheet(each)
+                        else:
+                            wb_web.create_sheet(each)
                 except:
                     pass
         wb_web.create_sheet('Конфликты')
         wb_web.save(self.pathDone)
         wb_web.close()
         wb_bit.close()
-    
-    def __count_tasks_in_departments(self)->dict:
+
+    def __count_tasks_in_departments(self) -> dict:
         """Создает словарь с названиями всех бюро и количество программ ПЭ в каждом из них
 
         Returns:
@@ -160,17 +168,17 @@ class Xl_work:
             first_two = task_name[:2]
             if (first_two == 'ПЭ'):
                 if (sheet.cell(column=10, row=i).value != 'Завершена'):
-                        tag = sheet.cell(column=21, row=i).value
-                        try:
-                            tags = tag.split(', ')
-                        except:
-                            pass
-                        for each in tags:
-                            if (each in amount):
-                                amount[each] += 1
-                            else:
-                                amount[each] = 1
-        
+                    tag = sheet.cell(column=21, row=i).value
+                    try:
+                        tags = tag.split(', ')
+                    except:
+                        pass
+                    for each in tags:
+                        if (each in amount):
+                            amount[each] += 1
+                        else:
+                            amount[each] = 1
+
         return amount
 
     def __spread_on_sheets(self, links) -> None:
@@ -229,7 +237,7 @@ class Xl_work:
         wb_done.close()
         wb_web.close()
 
-    def __count_unique(self, column: int, path = None, sheet = None)->int:
+    def __count_unique(self, column: int, path=None, sheet=None) -> int:
         """Рассчитывает число уникальных элементов, получив на вход номер столбца с идентификаторами, а 
         также путь к файлу или лист уже открытого
 
@@ -247,7 +255,7 @@ class Xl_work:
             for i in range(2, sheet.max_row):
                 if (sheet.cell(column=column, row=i).value not in unique_elems):
                     unique_elems.append(sheet.cell(column=column, row=i).value)
-            return(len(unique_elems))
+            return (len(unique_elems))
         if path:
             wb = self.open_file(path)
 
@@ -261,8 +269,8 @@ class Xl_work:
             wb.save(path)
             wb.close()
             return (len(unique_elems))
-        
-    def __stat(self)->None:
+
+    def __stat(self) -> None:
         """Создает в итоговом файле лист со статистикой
         На этом листе выводит общее количество тракторов, которое находит через функцию __count_number_of_machines,
         список всех бюро с количеством проектов ПЭ в каждом из них на основе словаря,
@@ -270,7 +278,7 @@ class Xl_work:
 
         Returns:
             None
-        
+
         """
 
         num_of_machines = self.__count_unique(path=self.paths[0], column=2)
@@ -280,7 +288,7 @@ class Xl_work:
 
         wb = oxl.load_workbook(filename=path)
         wb.create_sheet('Статистика')
-        wb.active=wb['Статистика']
+        wb.active = wb['Статистика']
         sheet = wb.active
 
         sheet.column_dimensions['A'].width = 36.29
@@ -289,36 +297,46 @@ class Xl_work:
 
         """Выведение числа тракторов"""
         sheet.cell(column=1, row=1).value = 'Количество тракторов'
-        sheet.cell(column=1, row=1).font = Font(name='Times New Roman', bold=True, size=12)
+        sheet.cell(column=1, row=1).font = Font(
+            name='Times New Roman', bold=True, size=12)
         sheet.cell(column=2, row=1).value = num_of_machines
-        sheet.cell(column=2, row=1).font = Font(name='Times New Roman', bold=False, size=12)
+        sheet.cell(column=2, row=1).font = Font(
+            name='Times New Roman', bold=False, size=12)
 
         '''Выведение общ. числа ПЭ'''
         sheet.cell(column=1, row=2).value = 'Количество программ ПЭ'
-        sheet.cell(column=1, row=2).font = Font(name='Times New Roman', bold=True, size=12)
+        sheet.cell(column=1, row=2).font = Font(
+            name='Times New Roman', bold=True, size=12)
         sheet.cell(column=2, row=2).value = num_of_programms
-        sheet.cell(column=2, row=2).font = Font(name='Times New Roman', bold=False, size=12)
+        sheet.cell(column=2, row=2).font = Font(
+            name='Times New Roman', bold=False, size=12)
 
         """Таблица с числом проектов у каждого бюро"""
         sheet.cell(column=1, row=4).value = 'Бюро'
-        sheet.cell(column=1, row=4).font = Font(name='Times New Roman', bold=True, size=12)
+        sheet.cell(column=1, row=4).font = Font(
+            name='Times New Roman', bold=True, size=12)
         sheet.cell(column=2, row=4).value = 'Кол-во ПЭ'
-        sheet.cell(column=2, row=4).font = Font(name='Times New Roman', bold=True, size=12)
+        sheet.cell(column=2, row=4).font = Font(
+            name='Times New Roman', bold=True, size=12)
         sheet.cell(column=3, row=4).value = 'Кол-во тракторов в ПЭ'
-        sheet.cell(column=3, row=4).font = Font(name='Times New Roman', bold=True, size=12)
+        sheet.cell(column=3, row=4).font = Font(
+            name='Times New Roman', bold=True, size=12)
         for row_index, (key, value) in enumerate(data.items(), start=5):
             sheet[f'A{row_index}'] = key
             sheet[f'B{row_index}'] = value
-            sheet[f'C{row_index}'] = self.__count_unique(column=2, sheet=wb[wb.sheetnames[row_index-4]])
+            sheet[f'C{row_index}'] = self.__count_unique(
+                column=2, sheet=wb[wb.sheetnames[row_index-4]])
 
         for i in range(1, len(wb.sheetnames)-2):
-            sheet.cell(row = 4+i, column=1).hyperlink = f"#'{wb.sheetnames[i]}'!A1"
-
+            sheet.cell(
+                row=4+i, column=1).hyperlink = f"#'{wb.sheetnames[i]}'!A1"
 
         """Создание диаграммы"""
         chart = PieChart3D()
-        labels = Reference(sheet, min_col=1, min_row=5, max_row=sheet.max_row, max_col=1)
-        info = Reference(sheet, min_col=2, min_row=4, max_row=sheet.max_row, max_col=2)
+        labels = Reference(sheet, min_col=1, min_row=5,
+                           max_row=sheet.max_row, max_col=1)
+        info = Reference(sheet, min_col=2, min_row=4,
+                         max_row=sheet.max_row, max_col=2)
         chart.add_data(info, titles_from_data=True)
         chart.set_categories(labels)
 
@@ -328,17 +346,16 @@ class Xl_work:
         chart.legend.position = 'b'
 
         chart.title = 'Программы ПЭ в бюро'
-        chart.series[0].explosion = 10  
-
+        chart.series[0].explosion = 10
 
         sheet.add_chart(chart, 'E1')
 
         wb.move_sheet(wb.active, offset=-(len(wb.sheetnames) - 1))
         wb.active = wb['Статистика']
-        
+
         wb.save(self.pathDone)
         wb.close()
-    
+
     def open_file(self, path):
         """Открывает файл
 
@@ -360,7 +377,7 @@ class Xl_work:
         в итогоговом файле распределяяет информацию по листам с бюро и создает лист статистики
 
         :rtype: None
-        
+
         """
         self.__delete_unwanted_rows()
         self.__create_sheets()
