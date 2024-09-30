@@ -8,7 +8,7 @@ import os
 # Project classes
 from scripts.exlWrapper import ExcelWrapper
 from scripts.xl_work_class import Xl_work
-from .models import ModuleSU
+from .models import ModuleSU, Bureau
 
 """Views отвечает за принятие запросов, обработку данных из них и возрат ответов пользователю
 """
@@ -93,8 +93,26 @@ def add_data_b24(request):
         Returns:
             _type_: Статус операции
     """
-    modules = ModuleSU.objects.all()
-    modules = modules.filter(title)
+    file = request.FILES['file_bitrix']
+    wb = Xl_work.open_file(path=file)
+    if wb:
+        ws = wb.active
+        for i, el in enumerate(ws["B"], 1):
+            if el.value[:2] == 'ПЭ':
+                name = el.value[4:].split('; ')
+                if ws["C"+str(i)].value is not None:
+                    disc = ws["C"+str(i)].value
+                    if disc[:2] == "ПЭ":
+                        name = disc[:4].split('; ')
+                for each in name:
+                    bureaus = ws['U'+str(i)].value.split(', ')
+                    for bureau in bureaus:
+                        bureau_instance = Bureau.objects.update_or_create(
+                            title=bureau)
+                        module_instance = ModuleSU.objects.update_or_create(
+                            title=each, status=ws["J"+str(i)].value != 'Завершена', bureau=bureau_instance)
+                        Bureau.objects.update_or_create(
+                            title=bureau, modules=module_instance)
 
 
 def download_file(request, id):
