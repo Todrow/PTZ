@@ -16,6 +16,7 @@
                     document.getElementById("message-header").textContent = 'Отчёт готов к скачиванию';
                     document.getElementById("exit_button").style.display="none";
                     document.getElementById("ok_btn").style.display = 'block';
+                    
                 }
                 else{
                     // Выводит текст ошибки
@@ -54,6 +55,25 @@
     </head>
     
     <body>
+        <nav id="nav">
+            <!-- Checkbox for toggling menu -->
+            <input type="checkbox" id="check">
+        
+            <!-- Menu icon -->
+            <label for="check" class="checkbtn">
+                <i class="fas fa-bars"></i>
+            </label>
+        
+            <!-- Site logo -->
+            <label class="logo">ПТЗ</label>
+        
+            <!-- Navigation links -->
+            <ul>
+                <li><a href="merge_files/">объединить отчеты</a></li>
+                <li><a class="active" href="">Форматировать отчет</a></li>
+                <li><a href="doc">Документация</a></li>
+            </ul>
+        </nav>
         <div class="card">
             <h1>Загрузите файл</h1>
             <form method="POST" enctype="multipart/form-data" id="myForm">

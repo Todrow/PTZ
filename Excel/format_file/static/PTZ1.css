@@ -7,12 +7,15 @@ body {
 
 }
 
+
 .card {
     position: relative;
+
     width: 400px;
-    height: 500px;
+    height: 490px;
     border-radius: 15px;
     box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.1);
+    margin: 0px;
     margin-left: 100px;
     margin-right: 100px;
     padding-left: 0px;
@@ -20,6 +23,8 @@ body {
     grid-template-rows: 1fr;
     border: 2px solid #e5e5e5;
     transform: scale(1.25);
+    padding-top: 20px;
+    top: 30px;
 }
 
 .btn {
@@ -298,3 +303,89 @@ img {
     font-family: Arial, Helvetica, sans-serif;
 
 }
+
+/* Google Fonts Link */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  list-style: none;
+  box-sizing: border-box;
+}
+
+nav {
+    position: fixed; /* или position: absolute; в зависимости от макета */
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* или другой вариант для выравнивания */
+    background: #cfcfcf74; /* цвет фона для навигации */
+    z-index: 1000; /* чтобы навбар был поверх других элементов */
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+label.logo {
+  color: rgb(0, 0, 0);
+  font-size: 25px;
+  line-height: 60px;
+  padding: 0 100px;
+  font-weight: bold;
+}
+
+nav ul {
+  float: right;
+  margin-right: 20px;
+}
+
+nav ul li {
+  display: inline-block;
+  line-height: 60px;
+  margin: 0 5px;
+}
+
+nav ul li a {
+  color: rgb(0, 0, 0);
+  font-size: 17px;
+  font-weight: bold;
+  padding: 7px 13px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+a.active,
+a:hover {
+  background: #c1c0c0;
+  color: #000000;
+  transition: .5s;
+  border-radius: 10px;
+}
+
+.checkbtn {
+  font-size: 22px;
+  color: white;
+  float: right;
+  line-height: 80px;
+  margin-right: 30px;
+  cursor: pointer;
+  display: none;
+}
+
+#check {
+  display: none;
+}
+
+@media (max-width: 1050px) {
+  label.logo {
+    padding-left: 30px;
+  }
+
+  nav ul li a {
+    font-size: 16px;
+  }
+}
+
+

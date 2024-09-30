@@ -9,7 +9,7 @@
             function done(result){
                 // Функция, меняющая всплывающее окно при получении ответа от сервера
                 if (result.error == ''){
-                    // Выолняет этот код если файл успешно обработан без оишбок
+                    // Выолняет этот код если файл успешно обработан без ошибок
                     document.getElementById('ok_btn').href="download/"+result.id;
                     document.getElementById("loader").style.display="none";
                     document.getElementById("message-main").textContent = '';
@@ -54,6 +54,26 @@
     </head>
     
     <body>
+        <nav id="nav">
+            <!-- Checkbox for toggling menu -->
+            <input type="checkbox" id="check">
+        
+            <!-- Menu icon -->
+            <label for="check" class="checkbtn">
+                <i class="fas fa-bars"></i>
+            </label>
+        
+            <!-- Site logo -->
+            <label class="logo">ПТЗ</label>
+        
+            <!-- Navigation links -->
+            <ul>
+                <li><a class="active" href="">объединить отчеты</a></li>
+                <li><a href="format/">Форматировать отчет</a></li>
+                <li><a href="doc/">Документация</a></li>
+            </ul>
+        </nav>
+
         <div class="card">
             <h1>Загрузите файлы</h1>
             <form method="POST" enctype="multipart/form-data" id="myForm">
@@ -77,11 +97,12 @@
                 <p class="message-main" id="message-main">Отчёт можно будет загрузить по окончании обработки</p>
                 <div class="loader" id="loader"></div>
                 <div style="justify-self: center;">
-                    <button id="exit_button" class="ok_btn" style="right: 0%; justify-content: center; align-content: center;">Отмена</button>
+                    <button id="exit_button" class="ok_btn" style="right: 0%; justify-content: center; align-content: center">Отмена</button>
                     <a id="ok_btn" class="ok_btn" style="left: 0%; display: none;" href='download'>Скачать</a>
                 </div>
             </div>
         </div>
+        
         <script src="{% static "PTZ1.js" %}"></script>
     </body>
 </html>

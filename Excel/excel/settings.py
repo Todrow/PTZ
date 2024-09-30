@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'merge_files.apps.MergeFilesConfig',
     'format_file.apps.FormatFileConfig',
+    'doc.apps.DocumentanionConfig',
+
+
 ]
 
 MIDDLEWARE = [

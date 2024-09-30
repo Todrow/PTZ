@@ -21,8 +21,6 @@ def format_file(path_file:str, path_done:str) -> str:
     wb.save(path_done)
     wb.close()
 
-
-
 def index_2(request):
     """Выводит страницу с программой форматирования отчета
 
@@ -42,6 +40,11 @@ def index_2(request):
 
     if request.method == 'POST' and request.FILES:
         file = request.FILES['file']
+
+        try:
+            wb = oxl.load_workbook(file)
+        except:
+            return JsonResponse({"error": 'Файл не читается', "id": str(request.META['HTTP_ID'])})
 
         format_file(file, path_done+request.META['HTTP_ID']+'.xlsx')
 

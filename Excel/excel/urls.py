@@ -22,7 +22,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('merge_files/', include('merge_files.urls')),
     path('format/', include('format_file.urls')),
+    path('doc/', include('doc.urls')),
     path('', RedirectView.as_view(url='/merge_files/', permanent=True)),
+    path('merge_files/format/', RedirectView.as_view(url='/format/', permanent=True)),
+    path('doc/format/', RedirectView.as_view(url='/format/', permanent=True)),
+    path('merge_files/doc/', RedirectView.as_view(url='/doc/', permanent=True)),
+    path('format/merge_files/', RedirectView.as_view(url='/merge_files/', permanent=True)),
+    path('doc/merge_files/', RedirectView.as_view(url='/merge_files/', permanent=True)),
+    path('format/doc/', RedirectView.as_view(url='/doc/', permanent=True)),
+
 ]
 # Используйте static() чтобы добавить соотношения для статических файлов
 # Только на период разработки

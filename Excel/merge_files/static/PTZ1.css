@@ -7,12 +7,15 @@ body {
 
 }
 
+
 .card {
     position: relative;
+
     width: 400px;
     height: 500px;
     border-radius: 15px;
     box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.1);
+    margin: 0px;
     margin-left: 100px;
     margin-right: 100px;
     padding-left: 0px;
@@ -20,12 +23,14 @@ body {
     grid-template-rows: 1fr;
     border: 2px solid #e5e5e5;
     transform: scale(1.25);
+    padding-top: 20px;
+    top: 30px;
 }
 
 .btn {
     background-color: #ce2a2e;
     position: relative;
-    left: 60%;
+    left: 58%;
     bottom: 1%;
     color: white;
     border: 1px solid #e5e5e5;
@@ -215,7 +220,7 @@ img {
     grid-template-rows: 1fr;
     height: 300px;
     width: 500px;
-    align-content: space-around;
+    align-content: space-between;
     flex-direction: column;
 }
 
@@ -235,7 +240,7 @@ img {
     background-color: #ce2a2e;
     position: relative;
     color: white;
-    bottom: -20%;
+    bottom: -30%;
     border: 1px solid #e5e5e5;
     height: auto;
     width: 110px;
@@ -274,10 +279,12 @@ img {
     border: 16px solid #c1c0c0;
     border-top: 16px solid #ce2a2e;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    margin: 30px;
+    width: 100px;
+    height: 100px;
     animation: spin 1s linear infinite;
     justify-self: center;
+    
 }
 
 @keyframes spin {
@@ -298,3 +305,106 @@ img {
     font-family: Arial, Helvetica, sans-serif;
 
 }
+
+
+
+* {
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  list-style: none;
+  box-sizing: border-box;
+}
+
+nav {
+    position: fixed; /* или position: absolute; в зависимости от макета */
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* или другой вариант для выравнивания */
+    background: #cfcfcf74; /* цвет фона для навигации */
+    z-index: 1000; /* чтобы навбар был поверх других элементов */
+    font-family: Arial, Helvetica, sans-serif;
+    border-width: 0px;
+}
+
+
+label.logo {
+  color: rgb(0, 0, 0);
+  font-size: 25px;
+  line-height: 40px;
+  padding: 0 100px;
+  font-weight: bold;
+}
+
+nav ul {
+  float: right;
+  margin-right: 20px;
+}
+
+nav ul li {
+  display: inline-block;
+  line-height: 40px;
+  margin: 0 0px;
+}
+
+nav ul li a {
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+  font-weight: bold;
+  padding: 12px 13px;
+  text-transform: uppercase;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+
+}
+
+a.active {
+    background: #ffffff;
+    color: #000000;
+    transition: .5s;
+    height: 100%;
+
+  }
+
+a.active:hover {
+    background: #ffffff;
+    color: #000000;
+    transition: .5s;
+    height: 100%;
+}
+
+a:hover {
+  background: #c1c0c0;
+  color: #000000;
+  transition: .5s;
+}
+
+
+
+.checkbtn {
+  font-size: 22px;
+  color: white;
+  float: right;
+  line-height: 80px;
+  margin-right: 30px;
+  cursor: pointer;
+  display: none;
+}
+
+#check {
+  display: none;
+}
+
+@media (max-width: 1050px) {
+  label.logo {
+    padding-left: 30px;
+  }
+
+  nav ul li a {
+    font-size: 16px;
+  }
+}
+
+

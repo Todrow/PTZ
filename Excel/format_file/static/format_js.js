@@ -52,11 +52,10 @@ function handleClick() {
     // Очищает форму по нажатию на кнопку
     document.getElementById("popup-overlay").style.display = "none";
     fileName1.textContent = '';
-    fileName2.textContent = '';
     myForm.reset();
     sendButton.disabled = true;
     fileInput1.value = null;
-    fileInput2.value = null;
+    document.getElementById("nav").style.display = "flex"
 }
 
 function handleClickExit() {

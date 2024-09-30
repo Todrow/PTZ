@@ -9,6 +9,6 @@ from django.views.generic import RedirectView
 """
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('download/<id>', views.download_file, name='download'),
+
+    path('', views.doc, name='index_2'),
 ]

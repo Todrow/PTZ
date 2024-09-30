@@ -71,6 +71,8 @@ function handleClick() {
     sendButton.disabled = true;
     fileInput1.value = null;
     fileInput2.value = null;
+    document.getElementById("nav").style.display = "flex"
+
 }
 
 function handleClickExit() {
