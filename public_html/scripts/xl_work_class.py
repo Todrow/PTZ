@@ -110,10 +110,10 @@ class Xl_work:
                         names[el.value[4:]] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     el = ws["C"+str(i)]
                     try:
-                        for each in el.value.split('; '):
+                        for each in el.value[4:].split('; '):
                             discriptions[each] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     except:
-                        discriptions[el.value] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+                        discriptions[el.value[4:]] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                 except:
                     pass
         wb.close()
