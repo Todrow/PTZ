@@ -4,6 +4,8 @@ from openpyxl.chart import PieChart3D, Reference
 import logging
 import copy
 
+from merge_files.models import ModuleSU, Bureau
+
 
 class Xl_work:
     """Класс для создания неотформатированной версии отчета
@@ -105,15 +107,19 @@ class Xl_work:
                 try:
                     try:
                         for each in el.value[4:].split('; '):
-                            names[each] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+                            names[each] = {
+                                'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     except:
-                        names[el.value[4:]] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+                        names[el.value[4:]] = {
+                            'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     el = ws["C"+str(i)]
                     try:
                         for each in el.value.split('; '):
-                            discriptions[each] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+                            discriptions[each] = {
+                                'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     except:
-                        discriptions[el.value] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+                        discriptions[el.value] = {
+                            'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                 except:
                     pass
         wb.close()
@@ -126,28 +132,15 @@ class Xl_work:
         :rtype:None
 
         """
-        wb_bit = self.open_file(self.paths[1])
         wb_web = self.open_file(self.paths[0])
+        bureaus = Bureau.objects.all()
 
-        ws_web = wb_web.active
-        ws_bit = wb_bit.active
-        for i in range(1, ws_bit.max_row):
-            task = ws_bit.cell(column=2, row=i).value
-            if task[:2] == 'ПЭ' and ws_bit.cell(column=10, row=i).value != 'Завершена':
-                try:
-                    tags = ws_bit.cell(column=21, row=i).value.split(', ')
-                    for each in tags:
-                        each = each[5:].capitalize()
-                        if each in wb_web.sheetnames:
-                            continue
-                        else:
-                            wb_web.create_sheet(each)
-                except:
-                    pass
+        for bureu in bureaus:
+            wb_web.create_sheet(bureu.title[4:])
+
         wb_web.create_sheet('Конфликты')
         wb_web.save(self.pathDone)
         wb_web.close()
-        wb_bit.close()
 
     def __count_tasks_in_departments(self) -> dict:
         """Создает словарь с названиями всех бюро и количество программ ПЭ в каждом из них
@@ -156,26 +149,13 @@ class Xl_work:
             dict: Словарь с названиями всех бюро и количество программ ПЭ в каждом из них
         """
 
-        wb = self.open_file(self.paths[1])
-        sheet = wb.active
-        amount = {}
-        for i in range(1, sheet.max_row):
-            task_name = sheet.cell(column=2, row=i).value
-            first_two = task_name[:2]
-            if (first_two == 'ПЭ'):
-                if (sheet.cell(column=10, row=i).value != 'Завершена'):
-                    tag = sheet.cell(column=21, row=i).value
-                    try:
-                        tags = tag.split(', ')
-                    except:
-                        pass
-                    for each in tags:
-                        if (each in amount):
-                            amount[each] += 1
-                        else:
-                            amount[each] = 1
+        bureaus = Bureau.objects.in_bulk()
+        count_modules_in_bureau = {}
+        for id in bureaus:
+            bureau = bureaus[id]
+            count_modules_in_bureau[bureau.title] = len(list(filter(lambda x: x.status, bureau.modules)))
 
-        return amount
+        return count_modules_in_bureau
 
     def __spread_on_sheets(self, links) -> None:
         """Переносит информацию из веб-системы на лист соответсвующего бюро в итоговом файле

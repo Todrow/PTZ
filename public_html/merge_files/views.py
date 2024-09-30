@@ -82,6 +82,13 @@ def index(request):
     else:
         return render(request, 'index.html')
 
+def get_data():
+    """Получение данных из БД"""
+    bureaus = Bureau.objects.all()
+    
+    for bureu in bureaus:
+        bureu = bureu.title
+    
 
 def add_data_b24(request):
 
