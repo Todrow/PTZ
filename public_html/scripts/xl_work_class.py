@@ -97,28 +97,27 @@ class Xl_work:
         wb = self.open_file(self.paths[1])
 
         names = {}
-        discriptions = {}
         ws = wb.active
 
         for i, el in enumerate(ws["B"], 1):
-            if el.value[:2] == 'ПЭ':
-                try:
+                if el.value[:2] == 'ПЭ':
+                    if ws["C"+str(i)].value is not None:
+                        disc = ws["C"+str(i)].value
+                        if disc[:2] == "ПЭ":
+                            try:
+                                for each in disc[4:].split('; '):
+                                    names[each] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+                            except:
+                                names[disc[4:]] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+                            continue
                     try:
                         for each in el.value[4:].split('; '):
                             names[each] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
                     except:
                         names[el.value[4:]] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-                    el = ws["C"+str(i)]
-                    try:
-                        for each in el.value[4:].split('; '):
-                            discriptions[each] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-                    except:
-                        discriptions[el.value[4:]] = {'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-                except:
-                    pass
         wb.close()
-        return (names, discriptions)
-
+        return names
+        
     def __create_sheets(self) -> None:
         """ Создает в листы с информацией для каждого бюро в итоговом файле
         При этом, передаются только незавершенные записи о ПЭ 
@@ -177,13 +176,12 @@ class Xl_work:
 
         return amount
 
-    def __spread_on_sheets(self, links) -> None:
+    def __spread_on_sheets(self, link) -> None:
         """Переносит информацию из веб-системы на лист соответсвующего бюро в итоговом файле
 
         Args:
-            links (dict): словарь ключей-названий бюро
+            link (dict): словарь ключей-названий бюро
         """
-        linksn, linksd = links
         wb_web = self.open_file(self.paths[0])
         wb_done = self.open_file(self.pathDone)
 
@@ -195,21 +193,9 @@ class Xl_work:
                 continue
             knots = el.value.replace('  ', ' ').split('; ')
             for each in knots:
-                if each in linksn.keys():
-                    if linksn[each]['status']:
-                        for byros in linksn[each]['buro']:
-                            our_row = []
-                            for j, cell in enumerate(ws_web[i+1]):
-                                if j == 5:
-                                    our_row.append(each)
-                                elif j == ws_web.max_column-1:
-                                    continue
-                                else:
-                                    our_row.append(cell.value)
-                            wb_done[byros[5:].capitalize()].append(our_row)
-                elif each in linksd.keys():
-                    if linksd[each]['status']:
-                        for byros in linksd[each]['buro']:
+                if each in link.keys():
+                    if link[each]['status']:
+                        for byros in link[each]['buro']:
                             our_row = []
                             for j, cell in enumerate(ws_web[i+1]):
                                 if j == 5:
