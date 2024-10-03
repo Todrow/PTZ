@@ -38,7 +38,7 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
         wb.close()
     return xl.error, xl.message
 
-path_done = '/var/www/PTZ/public_html/uploads/'
+path_done = './uploads'
 def index(request):
     """Если приходит запрос, содержащий необходимые файлы, с методом POST, то возвращается json файл с id и
     значение ошибки. Значение ошибки формируется в функции merge_files, которая в свою очередь использует класс
@@ -81,13 +81,6 @@ def index(request):
         return JsonResponse({"id": str(request.META['HTTP_ID']), "error": error, "message": message})
     else:
         return render(request, 'index.html')
-
-def get_data():
-    """Получение данных из БД"""
-    bureaus = Bureau.objects.all()
-    
-    for bureu in bureaus:
-        bureu = bureu.title
     
 
 def add_data_b24(request):

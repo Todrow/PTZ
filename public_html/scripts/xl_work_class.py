@@ -100,28 +100,45 @@ class Xl_work:
 
         names = {}
         discriptions = {}
-        ws = wb.active
 
-        for i, el in enumerate(ws["B"], 1):
-            if el.value[:2] == 'ПЭ':
-                try:
-                    try:
-                        for each in el.value[4:].split('; '):
-                            names[each] = {
-                                'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-                    except:
-                        names[el.value[4:]] = {
-                            'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-                    el = ws["C"+str(i)]
-                    try:
-                        for each in el.value.split('; '):
-                            discriptions[each] = {
-                                'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-                    except:
-                        discriptions[el.value] = {
-                            'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-                except:
-                    pass
+        if wb:
+            ws = wb.active
+            for i, el in enumerate(ws["B"], 1):
+                if el.value[:2] == 'ПЭ':
+                    name = el.value[4:].split('; ')
+                    if ws["C"+str(i)].value is not None:
+                        disc = ws["C"+str(i)].value
+                        if disc[:2] == "ПЭ":
+                            name = disc[:4].split('; ')
+                    for each in name:
+                        bureaus = ws['U'+str(i)].value.split(', ')
+                        for bureau in bureaus:
+                            bureau_instance = Bureau.objects.update_or_create(
+                                title=bureau)
+                            module_instance = ModuleSU.objects.update_or_create(
+                                title=each, status=ws["J"+str(i)].value != 'Завершена', bureau=bureau_instance)
+                            bureau_instance.modules.set(module_instance)
+
+        # for i, el in enumerate(ws["B"], 1):
+        #     if el.value[:2] == 'ПЭ':
+        #         try:
+        #             try:
+        #                 for each in el.value[4:].split('; '):
+        #                     names[each] = {
+        #                         'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+        #             except:
+        #                 names[el.value[4:]] = {
+        #                     'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+        #             el = ws["C"+str(i)]
+        #             try:
+        #                 for each in el.value.split('; '):
+        #                     discriptions[each] = {
+        #                         'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+        #             except:
+        #                 discriptions[el.value] = {
+        #                     'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
+        #         except:
+        #             pass
         wb.close()
         return (names, discriptions)
 
@@ -167,6 +184,9 @@ class Xl_work:
         wb_web = self.open_file(self.paths[0])
         wb_done = self.open_file(self.pathDone)
 
+        linksn = ModuleSU.objects.in_bulk()
+        self._message(linksn)
+
         ws_web = wb_web.active
         first = True
         for i, el in enumerate(ws_web["F"]):
@@ -177,19 +197,7 @@ class Xl_work:
             for each in knots:
                 if each in linksn.keys():
                     if linksn[each]['status']:
-                        for byros in linksn[each]['buro']:
-                            our_row = []
-                            for j, cell in enumerate(ws_web[i+1]):
-                                if j == 5:
-                                    our_row.append(each)
-                                elif j == ws_web.max_column-1:
-                                    continue
-                                else:
-                                    our_row.append(cell.value)
-                            wb_done[byros[5:].capitalize()].append(our_row)
-                elif each in linksd.keys():
-                    if linksd[each]['status']:
-                        for byros in linksd[each]['buro']:
+                        for byros in linksn[each]['bureau']:
                             our_row = []
                             for j, cell in enumerate(ws_web[i+1]):
                                 if j == 5:

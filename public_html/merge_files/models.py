@@ -15,4 +15,4 @@ class Bureau(models.Model):
 class ModuleSU(models.Model):
     title = models.TextField(primary_key=True)
     status = models.BooleanField()
-    bureau = models.ManyToManyField(to="Bureau")
+    bureaus = models.ManyToManyField(to="Bureau")
