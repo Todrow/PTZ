@@ -79,14 +79,5 @@ a:hover {
   display: none;
 }
 
-@media (max-width: 1050px) {
-  label.logo {
-    padding-left: 30px;
-  }
-
-  nav ul li a {
-    font-size: 16px;
-  }
-}
 
 

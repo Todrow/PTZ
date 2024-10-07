@@ -6,6 +6,8 @@ const myForm = document.getElementById("myForm");
 const okButton = document.getElementById("ok_btn");
 const extButton = document.getElementById("exit_button");
 const sendButton = document.getElementById("send");
+const checkBox = document.getElementById("old_Bt")
+const bitrixBtn = document.getElementById("bitrix_btn")
 
 // fjngjfg
 
@@ -33,9 +35,10 @@ function checkIn() {
     // Выключает кнопку до момента выбора обоих файлов
     const field1 = document.getElementById('fileInput1').value;
     const field2 = document.getElementById('fileInput2').value;
+    const check = document.getElementById('old_Bt')
     const submitButton = document.getElementById('send');
 
-    if (field1 && field2) {
+    if ((field1 && field2) || (field2 && check.checked === true ) ){
         submitButton.disabled = false;
     }
     else {
@@ -88,3 +91,25 @@ okButton.addEventListener("click", handleClick);
 
 // Запускает функцию handleClick по нажатию extButton
 extButton.addEventListener("click", handleClickExit);
+
+document.getElementById('old_Bt').addEventListener('change', function() {
+    const span = document.getElementById('fileInput1');
+    
+    if (this.checked) {
+      span.classList.add('disabled');
+    } else {
+      span.classList.remove('disabled');
+    }
+  });
+
+function check() {
+    const field = document.getElementById('fileInput1')
+    const box = document.getElementById('old_Bt');
+
+    if (box.checked) {
+        field.disabled = true;
+    }
+    else {
+        field.disabled = false;
+    }
+}

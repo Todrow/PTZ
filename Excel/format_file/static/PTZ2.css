@@ -12,7 +12,7 @@ body {
     position: relative;
 
     width: 400px;
-    height: 490px;
+    height: 500px;
     border-radius: 15px;
     box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.1);
     margin: 0px;
@@ -30,14 +30,15 @@ body {
 .btn {
     background-color: #ce2a2e;
     position: relative;
-    left: 60%;
-    bottom: 1%;
     color: white;
     border: 1px solid #e5e5e5;
     height: 50px;
     width: 150px;
+    left: 54%;
+    bottom: 4%;
     padding: 10px 20px;
-    margin: 10px 0;
+    margin: 10px 19px;
+    margin-right: 0px;
     border-radius: 10px;
     cursor: pointer;
     box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.1);
@@ -220,7 +221,7 @@ img {
     grid-template-rows: 1fr;
     height: 300px;
     width: 500px;
-    align-content: space-around;
+    align-content: space-between;
     flex-direction: column;
 }
 
@@ -240,7 +241,7 @@ img {
     background-color: #ce2a2e;
     position: relative;
     color: white;
-    bottom: -20%;
+    bottom: -30%;
     border: 1px solid #e5e5e5;
     height: auto;
     width: 110px;
@@ -279,10 +280,12 @@ img {
     border: 16px solid #c1c0c0;
     border-top: 16px solid #ce2a2e;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    margin: 30px;
+    width: 100px;
+    height: 100px;
     animation: spin 1s linear infinite;
     justify-self: center;
+    
 }
 
 @keyframes spin {
@@ -304,8 +307,7 @@ img {
 
 }
 
-/* Google Fonts Link */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 
 * {
   padding: 0;
@@ -325,13 +327,14 @@ nav {
     background: #cfcfcf74; /* цвет фона для навигации */
     z-index: 1000; /* чтобы навбар был поверх других элементов */
     font-family: Arial, Helvetica, sans-serif;
+    border-width: 0px;
 }
 
 
 label.logo {
   color: rgb(0, 0, 0);
   font-size: 25px;
-  line-height: 60px;
+  line-height: 40px;
   padding: 0 100px;
   font-weight: bold;
 }
@@ -343,26 +346,43 @@ nav ul {
 
 nav ul li {
   display: inline-block;
-  line-height: 60px;
-  margin: 0 5px;
+  line-height: 40px;
+  margin: 0 0px;
 }
 
 nav ul li a {
   color: rgb(0, 0, 0);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: bold;
-  padding: 7px 13px;
-  border-radius: 10px;
+  padding: 12px 13px;
   text-transform: uppercase;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+
 }
 
-a.active,
+a.active {
+    background: #ffffff;
+    color: #000000;
+    transition: .5s;
+    height: 100%;
+
+  }
+
+a.active:hover {
+    background: #ffffff;
+    color: #000000;
+    transition: .5s;
+    height: 100%;
+}
+
 a:hover {
   background: #c1c0c0;
   color: #000000;
   transition: .5s;
-  border-radius: 10px;
 }
+
+
 
 .checkbtn {
   font-size: 22px;
@@ -378,14 +398,5 @@ a:hover {
   display: none;
 }
 
-@media (max-width: 1050px) {
-  label.logo {
-    padding-left: 30px;
-  }
-
-  nav ul li a {
-    font-size: 16px;
-  }
-}
 
 
