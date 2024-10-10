@@ -1,9 +1,9 @@
 body {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    line-height: 1.6;
     height: 100vh;
-    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
 
 }
 
@@ -17,13 +17,13 @@ body {
 }
 
 nav {
-    position: fixed; /* или position: absolute; в зависимости от макета */
+    position: sticky;
     top: 0px;
     left: 0px;
     width: 100%;
     display: flex;
     justify-content: space-between; /* или другой вариант для выравнивания */
-    background: #cfcfcf74; /* цвет фона для навигации */
+    background: #eaeaea; /* цвет фона для навигации */
     z-index: 1000; /* чтобы навбар был поверх других элементов */
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -32,7 +32,7 @@ nav {
 label.logo {
   color: rgb(0, 0, 0);
   font-size: 25px;
-  line-height: 60px;
+  line-height: 40px;
   padding: 0 100px;
   font-weight: bold;
 }
@@ -44,26 +44,42 @@ nav ul {
 
 nav ul li {
   display: inline-block;
-  line-height: 60px;
-  margin: 0 5px;
+  line-height: 40px;
+  margin: 0;
 }
 
 nav ul li a {
   color: rgb(0, 0, 0);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: bold;
-  padding: 7px 13px;
-  border-radius: 10px;
+  padding: 12px 13px;
   text-transform: uppercase;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 }
 
-a.active,
-a:hover {
-  background: #c1c0c0;
+.link.active {
+  background: #ffffff;
   color: #000000;
   transition: .5s;
-  border-radius: 10px;
+  height: 100%;
+
 }
+
+.link.active:hover {
+  background: #ffffff;
+  color: #000000;
+  transition: .5s;
+  height: 100%;
+}
+
+.link:hover {
+background: #c1c0c0;
+color: #000000;
+transition: .5s;
+}
+
+
 
 .checkbtn {
   font-size: 22px;
@@ -80,4 +96,93 @@ a:hover {
 }
 
 
+ /* Структура иерархии */
+ h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  padding: 10px 0;
+}
 
+h1 { margin-left: 20px; margin-top:0px;}
+h2 { margin-left: 40px; }
+h3 { margin-left: 80px; }
+h4 { margin-left: 120px; }
+h5 { margin-left: 160px; }
+h6{ margin-left: 180px; }
+
+p {
+  display: block;
+  margin: 20px auto;
+  max-width: 1000px;
+  width: 100%;
+}
+/* Выравнивание изображений */
+img {
+  display: block;
+  margin: 20px auto;
+  max-width: 1000px;
+  width: 100%;
+}
+
+/* Стиль для фрагментов кода */
+.code-block {
+  background-color: #f4f4f4;
+  border-left: 4px solid #333;
+  color: #333;
+  padding: 20px;
+  margin: 20px auto;
+  width: 80%;
+  overflow-x: auto;
+  position: relative;
+}
+
+/* Кнопка копирования */
+.copy-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ce2a2e;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: white;
+  border-radius: 4px;
+}
+
+.copy-button:hover {
+  background-color: #e6e6e6;
+  color: black;
+}
+
+
+.ul {
+  display: block;
+  margin: 20px auto;
+  max-width: 1000px;
+  width: 100%;
+}
+.li {
+  margin: 10px;
+}
+
+figcaption {
+  display: block;
+  margin: 20px auto;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.separator {
+  border: none; /* Убираем стандартную границу, если используем <hr> */
+  border-top: 2px solid #ccc; /* Устанавливаем верхнюю границу как линию сепаратора */
+  margin: 60px 5%; /* Отступ сверху и снизу для дистанцирования от других элементов */
+  width: 90%; /* Расширяем на всю ширину контейнера */
+}
+
+.separator_small {
+  border: none; /* Убираем стандартную границу, если используем <hr> */
+  border-top: 2px solid #ccc; /* Устанавливаем верхнюю границу как линию сепаратора */
+  margin: 40px 30%; /* Отступ сверху и снизу для дистанцирования от других элементов */
+  width: 40%; /* Расширяем на всю ширину контейнера */
+  display: flex;
+  justify-content: center;
+}

@@ -355,7 +355,7 @@ nav {
     width: 100%;
     display: flex;
     justify-content: space-between; /* или другой вариант для выравнивания */
-    background: #cfcfcf74; /* цвет фона для навигации */
+    background: #eaeaea; /* цвет фона для навигации */
     z-index: 1000; /* чтобы навбар был поверх других элементов */
     font-family: Arial, Helvetica, sans-serif;
     border-width: 0px;
@@ -378,7 +378,7 @@ nav ul {
 nav ul li {
   display: inline-block;
   line-height: 40px;
-  margin: 0 0px;
+  margin: 0;
 }
 
 nav ul li a {
