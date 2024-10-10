@@ -16,3 +16,4 @@ class ModuleSU(models.Model):
     title = models.TextField(primary_key=True)
     status = models.BooleanField()
     bureaus = models.ManyToManyField(to="Bureau")
+    op_hours = models.IntegerField(default=0)

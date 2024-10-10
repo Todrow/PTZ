@@ -8,7 +8,6 @@ import os
 # Project classes
 from scripts.exlWrapper import ExcelWrapper
 from scripts.xl_work_class import Xl_work
-from .models import ModuleSU, Bureau
 
 """Views отвечает за принятие запросов, обработку данных из них и возрат ответов пользователю
 """
@@ -38,7 +37,8 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
         wb.close()
     return xl.error, xl.message
 
-path_done = './uploads'
+
+path_done = '/var/www/PTZ/public_html/uploads/'
 def index(request):
     """Если приходит запрос, содержащий необходимые файлы, с методом POST, то возвращается json файл с id и
     значение ошибки. Значение ошибки формируется в функции merge_files, которая в свою очередь использует класс
@@ -82,38 +82,6 @@ def index(request):
     else:
         return render(request, 'index.html')
     
-
-def add_data_b24(request):
-
-    """Добавление в БД данных из Битрикс24 (из файла xl)
-
-        Args:
-            request (_type_): Файл Битрикс .xlsx формата
-
-        Returns:
-            _type_: Статус операции
-    """
-    file = request.FILES['file_bitrix']
-    wb = Xl_work.open_file(path=file)
-    if wb:
-        ws = wb.active
-        for i, el in enumerate(ws["B"], 1):
-            if el.value[:2] == 'ПЭ':
-                name = el.value[4:].split('; ')
-                if ws["C"+str(i)].value is not None:
-                    disc = ws["C"+str(i)].value
-                    if disc[:2] == "ПЭ":
-                        name = disc[:4].split('; ')
-                for each in name:
-                    bureaus = ws['U'+str(i)].value.split(', ')
-                    for bureau in bureaus:
-                        bureau_instance = Bureau.objects.update_or_create(
-                            title=bureau)
-                        module_instance = ModuleSU.objects.update_or_create(
-                            title=each, status=ws["J"+str(i)].value != 'Завершена', bureau=bureau_instance)
-                        Bureau.objects.update_or_create(
-                            title=bureau, modules=module_instance)
-
 
 def download_file(request, id):
     """Возвращает файл при нажатии на ссылку 'Скачать'

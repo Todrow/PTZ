@@ -3,6 +3,7 @@ from openpyxl.styles import Font
 from openpyxl.chart import PieChart3D, Reference
 import logging
 import copy
+from django.db.models import F
 
 from merge_files.models import ModuleSU, Bureau
 
@@ -109,36 +110,22 @@ class Xl_work:
                     if ws["C"+str(i)].value is not None:
                         disc = ws["C"+str(i)].value
                         if disc[:2] == "ПЭ":
-                            name = disc[:4].split('; ')
+                            name = disc[4:].split('; ')
                     for each in name:
                         bureaus = ws['U'+str(i)].value.split(', ')
+                        op_hours_string = ws['AQ'+str(i)].value
+                        if op_hours_string:
+                            op_hours = str(op_hours_string).split(' ')[0]
+                        else:
+                            op_hours = 0
+                        module_instance, _ = ModuleSU.objects.update_or_create(
+                            title=each, defaults={'status': ws["J"+str(i)].value != 'Завершена', 'op_hours': op_hours})
                         for bureau in bureaus:
-                            bureau_instance = Bureau.objects.update_or_create(
+                            bureau_instance, _ = Bureau.objects.update_or_create(
                                 title=bureau)
-                            module_instance = ModuleSU.objects.update_or_create(
-                                title=each, status=ws["J"+str(i)].value != 'Завершена', bureau=bureau_instance)
-                            bureau_instance.modules.set(module_instance)
+                            module_instance.bureau_set.add(bureau_instance)
+                            bureau_instance.modulesu_set.add(module_instance)
 
-        # for i, el in enumerate(ws["B"], 1):
-        #     if el.value[:2] == 'ПЭ':
-        #         try:
-        #             try:
-        #                 for each in el.value[4:].split('; '):
-        #                     names[each] = {
-        #                         'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-        #             except:
-        #                 names[el.value[4:]] = {
-        #                     'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-        #             el = ws["C"+str(i)]
-        #             try:
-        #                 for each in el.value.split('; '):
-        #                     discriptions[each] = {
-        #                         'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-        #             except:
-        #                 discriptions[el.value] = {
-        #                     'status': ws["J"+str(i)].value != 'Завершена', 'buro': ws['U'+str(i)].value.split(', ')}
-        #         except:
-        #             pass
         wb.close()
         return (names, discriptions)
 
@@ -153,7 +140,7 @@ class Xl_work:
         bureaus = Bureau.objects.all()
 
         for bureu in bureaus:
-            wb_web.create_sheet(bureu.title[4:])
+            wb_web.create_sheet(bureu.title[5:].capitalize())
 
         wb_web.create_sheet('Конфликты')
         wb_web.save(self.pathDone)
@@ -170,7 +157,7 @@ class Xl_work:
         count_modules_in_bureau = {}
         for id in bureaus:
             bureau = bureaus[id]
-            count_modules_in_bureau[bureau.title] = len(list(filter(lambda x: x.status, bureau.modules)))
+            count_modules_in_bureau[bureau.title] = len(list(filter(lambda x: x.status, bureau.modules.all())))
 
         return count_modules_in_bureau
 
@@ -185,7 +172,6 @@ class Xl_work:
         wb_done = self.open_file(self.pathDone)
 
         linksn = ModuleSU.objects.in_bulk()
-        self._message(linksn)
 
         ws_web = wb_web.active
         first = True
@@ -196,12 +182,15 @@ class Xl_work:
             knots = el.value.replace('  ', ' ').split('; ')
             for each in knots:
                 if each in linksn.keys():
-                    if linksn[each]['status']:
-                        for byros in linksn[each]['bureau']:
+                    if linksn[each].status:
+                        for byros in linksn[each].bureaus.all():
+                            byros = byros.title
                             our_row = []
                             for j, cell in enumerate(ws_web[i+1]):
                                 if j == 5:
                                     our_row.append(each)
+                                elif j == 3:
+                                    our_row.append(linksn[each].op_hours)
                                 elif j == ws_web.max_column-1:
                                     continue
                                 else:
@@ -236,7 +225,7 @@ class Xl_work:
         if sheet:
             unique_elems = []
 
-            for i in range(2, sheet.max_row):
+            for i in range(1, sheet.max_row+1):
                 if (sheet.cell(column=column, row=i).value not in unique_elems):
                     unique_elems.append(sheet.cell(column=column, row=i).value)
             return (len(unique_elems))
@@ -247,7 +236,7 @@ class Xl_work:
 
             unique_elems = []
 
-            for i in range(2, sheet.max_row):
+            for i in range(1, sheet.max_row+1):
                 if (sheet.cell(column=column, row=i).value not in unique_elems):
                     unique_elems.append(sheet.cell(column=column, row=i).value)
             wb.save(path)
