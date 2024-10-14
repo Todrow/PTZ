@@ -8,9 +8,8 @@
         <script>
             function done(result){
                 // Функция, меняющая всплывающее окно при получении ответа от сервера
-                console.log(result.message);
                 if (result.error == ''){
-                    // Выолняет этот код если файл успешно обработан без оишбок
+                    // Выолняет этот код если файл успешно обработан без ошибок
                     document.getElementById('ok_btn').href="download/"+result.id;
                     document.getElementById("loader").style.display="none";
                     document.getElementById("message-main").textContent = '';
@@ -48,28 +47,55 @@
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
                         'id': generateUUID(),
+                        
                     },
-                }).then((data) => data.json()).then((data) => done(data)) .catch(err => error(err));
+                }).then((data) => data.json()).then((data) => done(data)) .catch(err => error('Ошибка на стороне сервера :/'));
             }
+
+
+
         </script>
     </head>
     
     <body>
+        <nav id="nav">
+            <!-- Checkbox for toggling menu -->
+            <input type="checkbox" id="check">
+        
+            <!-- Menu icon -->
+            <label for="check" class="checkbtn">
+                <i class="fas fa-bars"></i>
+            </label>
+        
+            <!-- Site logo -->
+            <label class="logo">ПТЗ</label>
+        
+            <!-- Navigation links -->
+            <ul>
+                <li><a class="active" href="">объединить отчеты</a></li>
+                <li><a href="format/">Форматировать отчет</a></li>
+                <li><a href="doc/">Документация</a></li>
+            </ul>
+        </nav>
+
         <div class="card">
             <h1>Загрузите файлы</h1>
             <form method="POST" enctype="multipart/form-data" id="myForm">
                 {% csrf_token %}
                 <label class="input-file">
                         <span class="input-file-text" type="text" id="fileName1"></span>
-                        <input type="file" name="file_bitrix" id="fileInput1" oninput="checkIn()">
-                        <span class="input-file-btn">Битрикс</span>
+                        <input type="file" name="file_bitrix" id="fileInput1" onchange="checkIn()">
+                        <span class="input-file-btn" id="bitrix_btn">Битрикс</span>
                 </label>
                 <label class="input-file">
                     <span class="input-file-text" type="text" id="fileName2"></span>
-                    <input type="file" name="file_web" id="fileInput2" oninput="checkIn()">        
+                    <input type="file" name="file_web" id="fileInput2" onchange="checkIn()">        
                     <span class="input-file-btn">Веб система</span>
                 </label>
-                <input class="btn" type="submit" value="Сохранить" id="send" disabled></input>
+                <div style="display: inline-block; position: relative; left: 5%;">
+                    <input type="checkbox" id="old_Bt" onchange="check(); checkIn()">Старый Битрикс</input>
+                    <input class="btn" type="submit" value="Сохранить" id="send" disabled></input>
+                </div>
             </form>  
         </div>
         <div id="popup-overlay"> 
@@ -78,11 +104,12 @@
                 <p class="message-main" id="message-main">Отчёт можно будет загрузить по окончании обработки</p>
                 <div class="loader" id="loader"></div>
                 <div style="justify-self: center;">
-                    <button id="exit_button" class="ok_btn" style="right: 0%; justify-content: center; align-content: center;">Отмена</button>
+                    <button id="exit_button" class="ok_btn" style="right: 0%; justify-content: center; align-content: center">Отмена</button>
                     <a id="ok_btn" class="ok_btn" style="left: 0%; display: none;" href='download'>Скачать</a>
                 </div>
             </div>
         </div>
+        
         <script src="{% static "PTZ1.js" %}"></script>
     </body>
 </html>
