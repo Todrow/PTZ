@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'PTZ1.css' %}">
+        <link rel="shortcut icon" href="{% static "13452_0_.jpg" %}">
+        <title>Обработка данных</title>
+        <script>
+            function done(result){
+                // Функция, меняющая всплывающее окно при получении ответа от сервера
+                console.log(result.message);
+                if (result.error == ''){
+                    // Выолняет этот код если файл успешно обработан без оишбок
+                    document.getElementById('ok_btn').href="download/"+result.id;
+                    document.getElementById("loader").style.display="none";
+                    document.getElementById("message-main").textContent = '';
+                    document.getElementById("message-header").textContent = 'Отчёт готов к скачиванию';
+                    document.getElementById("exit_button").style.display="none";
+                    document.getElementById("ok_btn").style.display = 'block';
+                }
+                else{
+                    // Выводит текст ошибки
+                    // Подробнее в описании функции error
+                    error(result.error)
+                }
+            }
+            function error(err) {
+                // Убирает анимацию загрузки и выводит текст ошибки в заголовок
+                document.getElementById("loader").style.display="none";
+                document.getElementById("message-header").textContent = err;
+                document.getElementById("message-main").textContent = 'Попробуйте снова'
+            }
+            function submitForm(event) {
+                // Выводит всплывающее окно при отправке формы
+                event.preventDefault();
+                document.getElementById("popup-overlay").style.display = "block";
+                document.getElementById("loader").style.display="block";
+                document.getElementById("message-main").textContent = 'Отчёт можно будет загрузить по окончании обработки'
+                document.getElementById("message-header").textContent = 'Данные отправлены на сервер';
+                document.getElementById("exit_button").style.display="block";
+                document.getElementById("ok_btn").style.display = 'none';
+
+                fetch('/merge_files/', {
+                    // Отправляет файлы на сервер
+                    // через POST запрос
+                    method: 'POST',
+                    body: new FormData(document.getElementById("myForm")),
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'id': generateUUID(),
+                    },
+                }).then((data) => data.json()).then((data) => done(data)) .catch(err => error(err));
+            }
+        </script>
+    </head>
+    
+    <body>
+        <div class="card">
+            <h1>Загрузите файлы</h1>
+            <form method="POST" enctype="multipart/form-data" id="myForm">
+                {% csrf_token %}
+                <label class="input-file">
+                        <span class="input-file-text" type="text" id="fileName1"></span>
+                        <input type="file" name="file_bitrix" id="fileInput1" oninput="checkIn()">
+                        <span class="input-file-btn">Битрикс</span>
+                </label>
+                <label class="input-file">
+                    <span class="input-file-text" type="text" id="fileName2"></span>
+                    <input type="file" name="file_web" id="fileInput2" oninput="checkIn()">        
+                    <span class="input-file-btn">Веб система</span>
+                </label>
+                <input class="btn" type="submit" value="Сохранить" id="send" disabled></input>
+            </form>  
+        </div>
+        <div id="popup-overlay"> 
+            <div id="popup">
+                <h2 class="message-header" id="message-header">Данные отправлены на сервер</h2>
+                <p class="message-main" id="message-main">Отчёт можно будет загрузить по окончании обработки</p>
+                <div class="loader" id="loader"></div>
+                <div style="justify-self: center;">
+                    <button id="exit_button" class="ok_btn" style="right: 0%; justify-content: center; align-content: center;">Отмена</button>
+                    <a id="ok_btn" class="ok_btn" style="left: 0%; display: none;" href='download'>Скачать</a>
+                </div>
+            </div>
+        </div>
+        <script src="{% static "PTZ1.js" %}"></script>
+    </body>
+</html>
