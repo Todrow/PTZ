@@ -2,7 +2,6 @@ import openpyxl as oxl
 from openpyxl.styles import Font
 from openpyxl.chart import PieChart3D, Reference
 import copy
-from django.db.models import F
 
 from merge_files.models import ModuleSU, Bureau
 
@@ -240,7 +239,19 @@ class Xl_work:
             wb.save(path)
             wb.close()
             return (len(unique_elems))
-
+    
+    def __module_tractor(self, sheet, column_modules: str, column_tractors: str) -> dict:
+        module_tractor_dict = dict()
+        for i, each in enumerate(sheet[column_modules], 1):
+            if each.value in module_tractor_dict.keys():
+                module_tractor_dict[each.value].append(sheet[column_tractors+str(i)].value)
+            else:
+                module_tractor_dict[each.value] = [
+                    sheet[column_tractors+str(i)].value]
+        for key in module_tractor_dict.keys():
+            module_tractor_dict[key] = len(set(module_tractor_dict[key]))
+        return module_tractor_dict
+    
     def __stat(self) -> None:
         """Создает в итоговом файле лист со статистикой
         На этом листе выводит общее количество тракторов, которое находит через функцию __count_number_of_machines,
