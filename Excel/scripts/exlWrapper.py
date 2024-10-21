@@ -75,13 +75,17 @@ class ExcelWrapper: #
             do_add (bool): сообщает о необходимости добавлять шапку
         """
 
+        
+
         if do_add:
             ws.insert_rows(0)
         names = ["Модель трактора", "№ трактора", "Граничная дата гарантии", "Продолжительность контроля, м/ч", "Наработка, м/ч", "Опытный узел", "Дата и время обращения", "ПЭ: Комментарий", "Дефект выявлен на м/ч", "Разработчик программы ПЭ"]
         for index, el in enumerate(ws[1]):
             el.font = Font(name="Times New Roman", bold=True, size=12)
             el.value = names[index]
-        ws.auto_filter.ref = ws.dimensions
+
+        
+        
 
     def formattingCells(self, ws) -> None: 
         """Форматирует ячейки таблицы:
@@ -92,7 +96,7 @@ class ExcelWrapper: #
         """
 
         ws.row_dimensions[1].height = 30
-        widths = {'A': 17.554, 'B': 16.332, 'C': 19.109, 'D': 23.109, 'E': 12.886, 'F': 53.441, 'G': 18.664, 'H': 105.441, 'I': 20.332, 'J': 25.441}
+        widths = {'A': 40, 'B': 20, 'C': 19.109, 'D': 23.109, 'E': 12.886, 'F': 53.441, 'G': 18.664, 'H': 105.441, 'I': 20.332, 'J': 25.441}
         for row in ws.rows:
             for cell in row:
                 if cell.column_letter in widths.keys():
@@ -101,14 +105,14 @@ class ExcelWrapper: #
                         cell.alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
                     else:
                         cell.alignment = Alignment(wrap_text=True, horizontal='left', vertical='center')
-                    if cell.column_letter == 'J' and cell.value.count(',') > 1:
-                        commas = list(find_all(cell.value, ','))
-                        ad = 0
-                        for each in commas:
-                            each += ad
-                            if each+2 < len(cell.value):
-                                cell.value = cell.value[:each+2] + '\n' + cell.value[each+2:]
-                                ad += 1
+                    # if cell.column_letter == 'J' and cell.value.count(',') > 1:
+                    #     commas = list(find_all(cell.value, ','))
+                    #     ad = 0
+                    #     for each in commas:
+                    #         each += ad
+                    #         if each+2 < len(cell.value):
+                    #             cell.value = cell.value[:each+2] + '\n' + cell.value[each+2:]
+                    #             ad += 1
     
     def format(self) -> None:
         """Применяет все форматирование
