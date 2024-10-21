@@ -35,6 +35,7 @@ def merge_files(path_bitrix, path_web, path_done) -> (str, str):
             ew.formattingCells(wb[sheet])
         wb.save(path_done)
         wb.close()
+        xl.department_stat()
     return xl.error, xl.message
 
 

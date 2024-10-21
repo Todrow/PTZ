@@ -4,6 +4,9 @@ from openpyxl.chart import PieChart3D, Reference
 import copy
 
 from merge_files.models import ModuleSU, Bureau
+from collections import Counter
+from openpyxl.styles import Font, Alignment
+
 
 
 class Xl_work:
@@ -360,6 +363,47 @@ class Xl_work:
         if message not in self.message:
             self.message += message + '|||'
 
+    def department_stat(self):
+        wb = self.open_file(self.pathDone)
+
+        for each in wb.sheetnames[2:]:
+            ws = wb[each]
+            names = [cell.value for cell in ws['F'] if cell.value is not None and cell.value != 'Опытный узел']
+            count = Counter(names)
+            ws.insert_rows(1)
+            ws.cell(row=1, column=1, value='Название узла').font = Font(name="Times New Roman", bold=True, size=12)
+            ws.cell(row=1, column=1).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
+            ws.cell(row=1, column=2, value='Число записей').font = Font(name="Times New Roman", bold=True, size=12)
+            ws.cell(row=1, column=2).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
+
+            for each in count.keys():
+                ws.insert_rows(2)
+                ws.cell(row=2, column=1, value=each).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')          
+                ws.cell(row=2, column=2, value=count[each]).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
+
+                
+            l = len(count.keys())+2
+            ws.insert_rows(l)
+            ws.row_dimensions[l].height = 30
+            
+
+            for i, each in enumerate(ws['A']):
+                if each.value == 'Модель трактора':
+                    filter_start = 'A' + str(i+1)
+
+            filter_finish = str(ws.dimensions.split(':')[1])
+
+            filter_dim = filter_start + ':' + filter_finish
+            ws.auto_filter.ref = filter_dim
+
+            ws.row_dimensions[1].height = 30
+            
+
+        wb.save(self.pathDone)
+        wb.close()
+
+            
+
     def start(self) -> None:
         """ Запускает весь процесс совмещения двух файлов, перед этим выполняя проверку на ошибки при добавлении исходных файлов
         в итогоговом файле распределяяет информацию по листам с бюро и создает лист статистики
@@ -373,3 +417,4 @@ class Xl_work:
         self.__create_sheets()
         self.__spread_on_sheets()
         self.__stat()
+        
