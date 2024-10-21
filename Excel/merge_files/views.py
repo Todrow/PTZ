@@ -12,7 +12,7 @@ from scripts.xl_work_class import Xl_work
 """Views отвечает за принятие запросов, обработку данных из них и возрат ответов пользователю
 """
 
-def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
+def merge_files(path_bitrix, path_web, path_done) -> (str, str):
     """Соединяет 2 загруженных файла в единый отчет, используя классы Xl_work и ExcelWrapper
 
     Args:
@@ -38,7 +38,7 @@ def merge_files(path_bitrix: str, path_web: str, path_done: str) -> str:
     return xl.error, xl.message
 
 
-path_done = '/var/www/PTZ/public_html/uploads/'
+path_done = './uploads/'
 def index(request):
     """Если приходит запрос, содержащий необходимые файлы, с методом POST, то возвращается json файл с id и
     значение ошибки. Значение ошибки формируется в функции merge_files, которая в свою очередь использует класс
@@ -64,11 +64,17 @@ def index(request):
     except:
         pass
     if request.method == 'POST' and request.FILES:
-        file1 = request.FILES['file_bitrix']
-        ####
-        file2 = request.FILES['file_web']
-        ####
-        error, message = merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
+        if len(request.FILES) == 2:
+            file1 = request.FILES['file_bitrix']
+            ####
+            file2 = request.FILES['file_web']
+            ####
+            error, message = merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
+        elif len(request.FILES) == 1:
+            file = request.FILES['file_web']
+            ####
+            error, message = merge_files(
+                None, file, path_done+request.META['HTTP_ID']+'.xlsx')
         ####
         try:
             os.remove(file1)

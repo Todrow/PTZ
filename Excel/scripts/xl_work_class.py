@@ -1,7 +1,6 @@
 import openpyxl as oxl
 from openpyxl.styles import Font
 from openpyxl.chart import PieChart3D, Reference
-import logging
 import copy
 from django.db.models import F
 
@@ -30,8 +29,12 @@ class Xl_work:
         self.pathDone = done_src
         self.error = ''
         self.message = ''
-        check1 = self.__correct_file(copy.deepcopy(self.paths[0]))
-        check2 = self.__correct_file(copy.deepcopy(self.paths[1]))
+        if bit_src is None:
+            check1 = self.__correct_file(copy.deepcopy(self.paths[0]))
+            check2 = 'bitrix'
+        else:
+            check1 = self.__correct_file(copy.deepcopy(self.paths[0]))
+            check2 = self.__correct_file(copy.deepcopy(self.paths[1]))
         if check1 == 'web' and check2 == 'bitrix':
             self.error = ''
         elif check1 == 'can not read' or check2 == 'can not read':
@@ -91,16 +94,13 @@ class Xl_work:
         wb.save(self.paths[1])
         wb.close()
 
-    def __make_link_files(self) -> dict:
+    def __make_link_files(self) -> None:
         """Создет словри из названийи описаний бюро, задействованных в ПЭ
 
         :rtype: dicts
 
         """
         wb = self.open_file(self.paths[1])
-
-        names = {}
-        discriptions = {}
 
         if wb:
             ws = wb.active
@@ -127,7 +127,6 @@ class Xl_work:
                             bureau_instance.modulesu_set.add(module_instance)
 
         wb.close()
-        return (names, discriptions)
 
     def __create_sheets(self) -> None:
         """ Создает в листы с информацией для каждого бюро в итоговом файле
@@ -161,13 +160,12 @@ class Xl_work:
 
         return count_modules_in_bureau
 
-    def __spread_on_sheets(self, links) -> None:
+    def __spread_on_sheets(self) -> None:
         """Переносит информацию из веб-системы на лист соответсвующего бюро в итоговом файле
 
         Args:
             links (dict): словарь ключей-названий бюро
         """
-        linksn, linksd = links
         wb_web = self.open_file(self.paths[0])
         wb_done = self.open_file(self.pathDone)
 
@@ -341,7 +339,8 @@ class Xl_work:
 
         try:
             wb = oxl.load_workbook(filename=path)
-        except:
+        except Exception as err:
+            self._message('error open file:' + str(err))
             return False
         return wb
 
@@ -357,7 +356,9 @@ class Xl_work:
         :rtype: None
 
         """
-        self.__delete_unwanted_rows()
+        if self.paths[1] is not None:
+            self.__delete_unwanted_rows()
+            self.__make_link_files()
         self.__create_sheets()
-        self.__spread_on_sheets(self.__make_link_files())
+        self.__spread_on_sheets()
         self.__stat()
