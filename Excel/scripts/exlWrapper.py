@@ -96,7 +96,7 @@ class ExcelWrapper: #
         """
 
         ws.row_dimensions[1].height = 30
-        widths = {'A': 40, 'B': 20, 'C': 19.109, 'D': 23.109, 'E': 12.886, 'F': 53.441, 'G': 18.664, 'H': 105.441, 'I': 20.332, 'J': 25.441}
+        widths = {'A': 17, 'B': 20, 'C': 19.109, 'D': 23.109, 'E': 12.886, 'F': 53.441, 'G': 18.664, 'H': 105.441, 'I': 20.332, 'J': 25.441}
         for row in ws.rows:
             for cell in row:
                 if cell.column_letter in widths.keys():
