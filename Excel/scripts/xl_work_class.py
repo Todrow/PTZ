@@ -364,12 +364,12 @@ class Xl_work:
             ws.cell(row=1, column=1).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
             ws.cell(row=1, column=6, value='Число записей').font = Font(name="Times New Roman", bold=True, size=12)
             ws.cell(row=1, column=6).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
-            ws.merge_cells('A1:E1')
+            ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=5)
 
 
             for i, each in enumerate(count.keys()):
-                ws.merge_cells(start_row=i+2, start_column=1, end_row=i+2, end_column=5)
                 ws.insert_rows(2)
+                ws.merge_cells(start_row=i+2, start_column=1, end_row=i+2, end_column=5)
                 ws.cell(row=2, column=1, value=each).alignment = Alignment(wrap_text=True, horizontal='left', vertical='center')          
                 ws.cell(row=2, column=6, value=count[each]).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
 
