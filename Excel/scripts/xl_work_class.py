@@ -352,17 +352,35 @@ class Xl_work:
         if message not in self.message:
             self.message += message + '|||'
 
+    def __module_tractor(self, sheet, column_modules: str, column_tractors: str) -> dict:
+        module_tractor_dict = dict()
+        for i, each in enumerate(sheet[column_modules], 1):
+            if i == 1:
+                continue
+            if each.value in module_tractor_dict.keys():
+                module_tractor_dict[each.value].append(sheet[column_tractors+str(i)].value)
+            else:
+                module_tractor_dict[each.value] = [
+                    sheet[column_tractors+str(i)].value]
+        for key in module_tractor_dict.keys():
+            module_tractor_dict[key] = len(set(module_tractor_dict[key]))
+        return module_tractor_dict
+
+
+        
+
+
     def department_stat(self):
         wb = self.open_file(self.pathDone)
 
+
         for each in wb.sheetnames[2:]:
             ws = wb[each]
-            names = [cell.value for cell in ws['F'] if cell.value is not None and cell.value != 'Опытный узел']
-            count = Counter(names)
+            count = self.__module_tractor(sheet=ws, column_modules='F', column_tractors='B')
             ws.insert_rows(1)
             ws.cell(row=1, column=1, value='Название узла').font = Font(name="Times New Roman", bold=True, size=12)
             ws.cell(row=1, column=1).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
-            ws.cell(row=1, column=6, value='Число записей').font = Font(name="Times New Roman", bold=True, size=12)
+            ws.cell(row=1, column=6, value='Количество тракторов в программе').font = Font(name="Times New Roman", bold=True, size=12)
             ws.cell(row=1, column=6).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
             ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=5)
 
@@ -372,7 +390,7 @@ class Xl_work:
                 ws.merge_cells(start_row=i+2, start_column=1, end_row=i+2, end_column=5)
                 ws.cell(row=2, column=1, value=each).alignment = Alignment(wrap_text=True, horizontal='left', vertical='center')          
                 ws.cell(row=2, column=6, value=count[each]).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
-
+                
                 
             l = len(count.keys())+2
             ws.insert_rows(l)
