@@ -6,3 +6,4 @@ Excel/excel/__pycache__/
 Excel/merge_files/migrations/__pycache__/
 /__pycache__/
 Excel/doc/__pycache__/
+Excel/db.sqlite3

@@ -377,10 +377,44 @@ class Xl_work:
             module_tractor_dict[key] = len(set(module_tractor_dict[key]))
         return module_tractor_dict
 
+    def sheet_sort_rows(ws, row_start, row_end=0, cols=None, sorter=None, reverse=False):
 
+        """ Сортирует строки на листе
+            Args:
+                ws*:          Лист
+                row_start(int)*:  Первая строка, которую надо отсортировать
+                row_end(int):     Последняя строка, которую надо отсортировать (по умолчанию - последняя строка в листе)
+                cols(list):        Колонки, которые надо отсортировать (list) e.g. [2, 4]
+                sorter(func):      Функция сортировки (для метода sorted)
+                reverse(bool):     Обратная сортировка (развернуть)
+            * - Обязательные аргументы
+        """
+
+        bottom = ws.max_row
+        if row_end == 0:
+            row_end = ws.max_row
+        right = oxl.get_column_letter(ws.max_column)
+        if cols is None:
+            cols = range(1, ws.max_column+1)
+
+        array = {}
+        for row in range(row_start, row_end+1):
+            key = []
+            for col in cols:
+                key.append(ws.cell(row, col).value)
+            array[key] = array.get(key, set()).union({row})
+
+        order = sorted(array, key=sorter, reverse=reverse)
+
+        ws.move_range(f"A{row_start}:{right}{row_end}", bottom)
+        dest = row_start
+        for src_key in order:
+            for row in array[src_key]:
+                src = row + bottom
+                dist = dest - src
+                ws.move_range(f"A{src}:{right}{src}", dist)
+                dest += 1
         
-
-
     def department_stat(self):
         wb = self.open_file(self.pathDone)
 
