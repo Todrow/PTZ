@@ -479,7 +479,7 @@ class Xl_work:
 
             ws.row_dimensions[1].height = 30
 
-            for i in range(l+2, ws.max_row, 1):
+            for i in range(l+2, ws.max_row+1, 1):
                 val = ws.cell(row = i, column=6).value
                 ws.cell(row = i, column=6).fill = PatternFill(patternType='solid', start_color=count[val][1:])
 
