@@ -420,7 +420,8 @@ class Xl_work:
 
 
         for each in wb.sheetnames[2:]:
-            ws = wb[each]
+            wb.active = wb[each]
+            ws = wb.active
             count = self.__module_tractor(sheet=ws, column_modules='F', column_tractors='B')
             ws.insert_rows(1)
             ws.cell(row=1, column=1, value='Название узла').font = Font(name="Times New Roman", bold=True, size=12)
