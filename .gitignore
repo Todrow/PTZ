@@ -1,9 +1,3 @@
-Excel/uploads/
-Excel/scripts/__pycache__/
-Excel/doc/__pycache__/
-Excel/merge_files/__pycache__/
-Excel/excel/__pycache__/
-Excel/merge_files/migrations/__pycache__/
-/__pycache__/
-Excel/doc/__pycache__/
+**/uploads/
 Excel/db.sqlite3
+**/__pycache__/
