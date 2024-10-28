@@ -267,7 +267,7 @@ class Xl_work:
         """
 
         num_of_machines = self.__count_unique(path=self.paths[0], column=2)
-        num_of_programms = self.__count_unique(path=self.paths[0], column=6)
+        num_of_programms = ModuleSU.objects.filter(status=True).count()
         path = self.pathDone
         data = self.__count_tasks_in_departments()
 
