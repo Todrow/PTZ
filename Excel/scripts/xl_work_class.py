@@ -2,10 +2,12 @@ import openpyxl as oxl
 from openpyxl.styles import Font
 from openpyxl.chart import PieChart3D, Reference
 import copy
+import hashlib
 
 from merge_files.models import ModuleSU, Bureau
 from collections import Counter
 from openpyxl.styles import Font, Alignment
+from openpyxl.styles import PatternFill
 
 
 
@@ -415,6 +417,25 @@ class Xl_work:
                 ws.move_range(f"A{src}:{right}{src}", dist)
                 dest += 1
         
+    def __text_to_color(self, text):
+        # Получаем хэш строки
+        hash_object = hashlib.md5(text.encode('utf-8'))
+        hash_hex = hash_object.hexdigest()
+        
+        # Преобразуем первые 6 символов хэша в число
+        hash_integer = int(hash_hex[:6], 16)
+        
+        # Создаем цвет по компонентам R, G, B
+        # Для бледного цвета компоненты должны быть ближе к 255
+        r = 150 + (hash_integer % 101)  # 200-255
+        g = 150 + ((hash_integer // 100) % 101)  # 200-255
+        b = 150 + ((hash_integer // 10000) % 101)  # 200-255
+        
+        # Преобразуем в HEX
+        color_hex = f'#{r:02X}{g:02X}{b:02X}'
+        
+        return color_hex
+
     def department_stat(self):
         wb = self.open_file(self.pathDone)
 
@@ -429,6 +450,7 @@ class Xl_work:
             ws.cell(row=1, column=6, value='Количество тракторов в программе').font = Font(name="Times New Roman", bold=True, size=12)
             ws.cell(row=1, column=6).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
             ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=5)
+            
 
 
             for i, each in enumerate(count.keys()):
@@ -436,11 +458,14 @@ class Xl_work:
                 ws.merge_cells(start_row=i+2, start_column=1, end_row=i+2, end_column=5)
                 ws.cell(row=2, column=1, value=each).alignment = Alignment(wrap_text=True, horizontal='left', vertical='center')          
                 ws.cell(row=2, column=6, value=count[each]).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
+                count[each] = self.__text_to_color(each)
+                ws.cell(row=2, column=1).fill = PatternFill(fill_type='solid', start_color=count[each][1:])
                 
                 
             l = len(count.keys())+2
             ws.insert_rows(l)
             ws.row_dimensions[l].height = 30
+
             
 
             for i, each in enumerate(ws['A']):
@@ -453,6 +478,11 @@ class Xl_work:
             ws.auto_filter.ref = filter_dim
 
             ws.row_dimensions[1].height = 30
+
+            for i in range(l+2, ws.max_row, 1):
+                val = ws.cell(row = i, column=6).value
+                ws.cell(row = i, column=6).fill = PatternFill(patternType='solid', start_color=count[val][1:])
+
             
 
         wb.save(self.pathDone)
