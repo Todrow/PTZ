@@ -1,14 +1,12 @@
 import openpyxl as oxl
 from openpyxl.styles import Font
 from openpyxl.chart import PieChart3D, Reference
+from openpyxl.styles import Font, Alignment
+from openpyxl.styles import PatternFill
 import copy
 import hashlib
 
 from merge_files.models import ModuleSU, Bureau
-from collections import Counter
-from openpyxl.styles import Font, Alignment
-from openpyxl.styles import PatternFill
-
 
 
 class Xl_work:
