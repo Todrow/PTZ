@@ -66,6 +66,18 @@ class ExcelWrapper: #
                 if self.ws.cell(row=index, column=indexColumn).value is None or self.ws.cell(row=index, column=indexColumn).value == '':
                     self.ws.cell(row=index, column=indexColumn).value = self.ws.cell(row=index-1, column=indexColumn).value
 
+    def addAverageTime(self, ws):
+        tracktors = list()
+        total_sum = 0
+        for index, row in enumerate(ws.rows, start=0):
+            if index == 0:
+                continue
+            if row[1].value not in tracktors:
+                tracktors.append(row[1].value)
+                total_sum += int(row[4].value)
+        ws[f'D{ws.max_row+1}'] = 'Средняя наработка'
+        ws[f'E{ws.max_row}'] = str(total_sum//len(tracktors))
+
     def formatTitles(self, ws, do_add: bool) -> None:
         """Форматирует названия столбцов:
         задает им ширину, выравнивание, шрифт и его начертание
@@ -114,7 +126,7 @@ class ExcelWrapper: #
                     #             cell.value = cell.value[:each+2] + '\n' + cell.value[each+2:]
                     #             ad += 1
     
-    def format(self) -> None:
+    def format(self, addAverage = False) -> None:
         """Применяет все форматирование
         """
         # Удаляем лишнее
@@ -125,6 +137,7 @@ class ExcelWrapper: #
         self.formatTitles(self.ws, False)
         # Форматируем размеры ячеек
         self.formattingCells(self.ws)
+        if addAverage: self.addAverageTime(self.ws)
         self.save(self.path)
 
     def save(self, path: str) -> None:

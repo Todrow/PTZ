@@ -347,6 +347,7 @@ class Xl_work:
         return wb
 
     def _message(self, message) -> None:
+        '''Добавлет текст к сообщению, которое выводится в консоли JS, после формирования отчёта'''
         message = str(message)
         if message not in self.message:
             self.message += message + '|||'
