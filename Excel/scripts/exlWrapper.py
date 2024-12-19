@@ -126,7 +126,7 @@ class ExcelWrapper: #
                     #             cell.value = cell.value[:each+2] + '\n' + cell.value[each+2:]
                     #             ad += 1
     
-    def format(self, addAverage = False) -> None:
+    def format(self, addAverage) -> None:
         """Применяет все форматирование
         """
         # Удаляем лишнее

@@ -40,14 +40,20 @@
                 document.getElementById("exit_button").style.display="block";
                 document.getElementById("ok_btn").style.display = 'none';
 
+                const formData = new FormData(document.getElementById("myForm"));
+
+                const avrBtn = document.getElementById("avr_btn");
+                formData.append("avr_btn", avrBtn.checked);
+
                 fetch('/format/', {
                     // Отправляет файлы на сервер
                     // через POST запрос
                     method: 'POST',
-                    body: new FormData(document.getElementById("myForm")),
+                    body: formData,
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
                         'id': generateUUID(),
+                        
                     },
                 }).then((data) => data.json()).then((data) => done(data)) .catch(err => error('Ошибка на стороне сервера :/'));
             }
@@ -83,7 +89,10 @@
                         <input type="file" name="file" id="fileInput1" oninput="checkIn()">
                         <span class="input-file-btn">Файл</span>
                 </label>
-                <input class="btn" type="submit" value="Сохранить" id="send" disabled></input>
+                <div style="display: inline-block; position: relative; left: 5%;">
+                    <input type="checkbox" id="avr_btn" onchange="check(); checkIn()"> Средняя наработка</input>
+                    <input class="btn" type="submit" value="Сохранить" id="send" disabled></input>
+                </div>
             </form>  
         </div>
         <div id="popup-overlay"> 

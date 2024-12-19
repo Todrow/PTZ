@@ -6,18 +6,22 @@ import os
 import openpyxl as oxl
 
 import openpyxl as oxl
+import logging
+
+_logger = logging.getLogger(__name__)
 
 path_done = os.path.abspath('./uploads/')+'/'
 
-def format_file(path_file:str, path_done:str) -> str:
+def format_file(path_file:str, path_done:str, addAvr) -> str:
     ew = ExcelWrapper(['Вложения', 'Последний раз обновлено', 'Статус', 'Наименование сервисного центра'], ['ПЭ: дата время', 'ПЭ: Комментарий', 'ПЭ: наработка м/ч'], path_file)
-    ew.format(addAverage=True)
+    ew.format(addAvr)
     wb = oxl.load_workbook(filename=path_file)
     for sheet in wb.sheetnames[2:]:
         ew.formatTitles(wb[sheet], True)
         ew.formattingCells(wb[sheet])
     wb.save(path_done)
     wb.close()
+    return
 
 def index_2(request):
     """Выводит страницу с программой форматирования отчета
@@ -37,14 +41,15 @@ def index_2(request):
         pass
 
     if request.method == 'POST' and request.FILES:
-        file = request.FILES['file']
+        file = request.FILES.get('file')
+        addAvr = request.POST.get('avr_btn')
 
         try:
             wb = oxl.load_workbook(file)
         except:
             return JsonResponse({"error": 'Файл не читается', "id": str(request.META['HTTP_ID'])})
 
-        format_file(file, path_done+request.META['HTTP_ID']+'.xlsx')
+        format_file(file, path_done+request.META['HTTP_ID']+'.xlsx', addAvr=addAvr)
 
         try:
             os.remove(file)

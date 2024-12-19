@@ -9,7 +9,6 @@ const sendButton = document.getElementById("send");
 const checkBox = document.getElementById("old_Bt")
 const bitrixBtn = document.getElementById("bitrix_btn")
 
-// fjngjfg
 
 fileInput1.addEventListener('change', function () {
     // Проверяем, есть ли выбранные файлы
