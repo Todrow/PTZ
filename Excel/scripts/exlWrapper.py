@@ -2,6 +2,15 @@ import openpyxl as oxl
 from openpyxl.styles import Font, Alignment
 
 def find_all(a_str, sub): # Все вхождения подстроки в строку
+    """Принимает строку и возварщает все вхождения подстроки в строку
+
+    Args:
+        a_str (_type_): строка
+        sub (_type_): подстрока
+
+    Yields:
+        _type_: _description_
+    """
     start = 0
     while True:
         start = a_str.find(sub, start)
@@ -10,13 +19,13 @@ def find_all(a_str, sub): # Все вхождения подстроки в ст
         start += len(sub)
 
 class ExcelWrapper: # 
-    def __init__(self, deleteList: list, blackList: list, path) -> None:   
+    def __init__(self, deleteList: list, blackList: list, path:str) -> None:   
         """Функция innit класса
 
         Args:
             deleteList (list): Список колонок под удаление
             blackList (list): Список колонок, где не нужно заполнять пропущенные значения
-            path (_type_): Полное имя, обрабатываемого файла
+            path (str): Полное имя, обрабатываемого файла
         """
         self.wb = self.__open_file(path)
         self.DELETE_LIST = deleteList
@@ -24,11 +33,11 @@ class ExcelWrapper: #
         self.BLACK_LIST = blackList
         self.path = path
 
-    def __open_file(self, path):
+    def __open_file(self, path:str):
         """Открывает файл как work_book в openpyxl
 
         Args:
-            path (_type_): путь к файлу, который необходимо открыть
+            path (str): путь к файлу, который необходимо открыть
 
         Returns:
             _type_: Книга Excel
@@ -83,7 +92,7 @@ class ExcelWrapper: #
         задает им ширину, выравнивание, шрифт и его начертание
 
         Args:
-            ws (_type_): рабочий лист Excel
+            ws (openPyXl sheet): рабочий лист Excel
             do_add (bool): сообщает о необходимости добавлять шапку
         """
 
