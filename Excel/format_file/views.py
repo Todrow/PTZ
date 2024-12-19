@@ -14,7 +14,7 @@ path_done = os.path.abspath('./uploads/')+'/'
 
 def format_file(path_file:str, path_done:str, addAvr) -> str:
     ew = ExcelWrapper(['Вложения', 'Последний раз обновлено', 'Статус', 'Наименование сервисного центра'], ['ПЭ: дата время', 'ПЭ: Комментарий', 'ПЭ: наработка м/ч'], path_file)
-    ew.format(addAvr)
+    ew.format(addAverage=addAvr)
     wb = oxl.load_workbook(filename=path_file)
     for sheet in wb.sheetnames[2:]:
         ew.formatTitles(wb[sheet], True)

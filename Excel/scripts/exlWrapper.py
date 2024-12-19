@@ -137,7 +137,8 @@ class ExcelWrapper: #
         self.formatTitles(self.ws, False)
         # Форматируем размеры ячеек
         self.formattingCells(self.ws)
-        if addAverage: self.addAverageTime(self.ws)
+        if addAverage == "true":
+            self.addAverageTime(self.ws)
         self.save(self.path)
 
     def save(self, path: str) -> None:
