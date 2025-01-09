@@ -168,6 +168,19 @@ class Xl_work:
         Args:
             links (dict): словарь ключей-названий бюро
         """
+        # Словарь, по которому колонки меняются местами
+        CHANGE_POSITIONS_OF_COLUMNS = {
+            '0': 0,
+            '1': 1,
+            '5': 2,
+            '6': 3,
+            '3': 4,
+            '4': 5,
+            '8': 6,
+            '7': 7,
+            '2': 8,
+        }
+
         wb_web = self.open_file(self.paths[0])
         wb_done = self.open_file(self.pathDone)
 
@@ -185,16 +198,22 @@ class Xl_work:
                     if linksn[each].status:
                         for byros in linksn[each].bureaus.all():
                             byros = byros.title
-                            our_row = []
+                            our_row = [0]*9
                             for j, cell in enumerate(ws_web[i+1]):
                                 if j == 5:
-                                    our_row.append(each)
+                                    our_row[
+                                        CHANGE_POSITIONS_OF_COLUMNS[str(j)]
+                                    ] = each
                                 elif j == 3:
-                                    our_row.append(linksn[each].op_hours)
+                                    our_row[
+                                        CHANGE_POSITIONS_OF_COLUMNS[str(j)]
+                                    ] = linksn[each].op_hours
                                 elif j == ws_web.max_column-1:
                                     continue
                                 else:
-                                    our_row.append(cell.value)
+                                    our_row[
+                                        CHANGE_POSITIONS_OF_COLUMNS[str(j)]
+                                    ] = cell.value
                             wb_done[byros[5:].capitalize()].append(our_row)
                 else:
                     our_row = []
@@ -313,8 +332,8 @@ class Xl_work:
         chart.add_data(info, titles_from_data=True)
         chart.set_categories(labels)
 
-        chart.width = 15
-        chart.height = 12
+        chart.width = 20
+        chart.height = 15
 
         chart.legend.position = 'b'
 
@@ -430,7 +449,7 @@ class Xl_work:
         for each in wb.sheetnames[2:]:
             wb.active = wb[each]
             ws = wb.active
-            count = self.__module_tractor(sheet=ws, column_modules='F', column_tractors='B')
+            count = self.__module_tractor(sheet=ws, column_modules='C', column_tractors='B')
             ws.insert_rows(1)
             ws.cell(row=1, column=1, value='Название узла').font = Font(name="Times New Roman", bold=True, size=12)
             ws.cell(row=1, column=1).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
@@ -442,11 +461,12 @@ class Xl_work:
 
             for i, each in enumerate(count.keys()):
                 ws.insert_rows(2)
-                ws.merge_cells(start_row=i+2, start_column=1, end_row=i+2, end_column=5)
                 ws.cell(row=2, column=1, value=each).alignment = Alignment(wrap_text=True, horizontal='left', vertical='center')          
                 ws.cell(row=2, column=6, value=count[each]).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
                 count[each] = self.__text_to_color(each)
                 ws.cell(row=2, column=1).fill = PatternFill(fill_type='solid', start_color=count[each][1:])
+                ws.merge_cells(start_row=i+2, start_column=1,
+                               end_row=i+2, end_column=5)
                 
                 
             l = len(count.keys())+2
@@ -467,8 +487,8 @@ class Xl_work:
             ws.row_dimensions[1].height = 30
 
             for i in range(l+2, ws.max_row+1, 1):
-                val = ws.cell(row = i, column=6).value
-                ws.cell(row = i, column=6).fill = PatternFill(patternType='solid', start_color=count[val][1:])
+                val = ws.cell(row = i, column=3).value
+                ws.cell(row = i, column=3).fill = PatternFill(patternType='solid', start_color=count[val][1:])
 
             
 
