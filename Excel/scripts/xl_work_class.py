@@ -329,7 +329,7 @@ class Xl_work:
             sheet[f'C{row_index}'] = self.__count_unique(
                 column=2, sheet=wb[wb.sheetnames[row_index-4]])
 
-        for i in range(1, len(wb.sheetnames)):
+        for i in range(1, len(wb.sheetnames)-2):
             sheet.cell(
                 row=4+i, column=1).hyperlink = f"#'{wb.sheetnames[i]}'!A1"
 
