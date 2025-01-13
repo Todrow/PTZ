@@ -141,10 +141,12 @@ class Xl_work:
         bureaus = Bureau.objects.all()
 
         for bureu in bureaus:
-            if bureu.title[:4] == 'Бюро':
-                wb_web.create_sheet(bureu.title[5:].capitalize())
-            else:
-                wb_web.create_sheet(bureu.title.capitalize())
+            title_byro = bureu.title
+            if title_byro[:4] == 'Бюро':
+                title_byro = title_byro[5:]
+            if len(title_byro) > 31:
+                title_byro = title_byro[:31]
+            wb_web.create_sheet(title_byro.capitalize())
 
         wb_web.create_sheet('Конфликты')
         wb_web.save(self.pathDone)
@@ -217,7 +219,12 @@ class Xl_work:
                                     our_row[
                                         CHANGE_POSITIONS_OF_COLUMNS[str(j)]
                                     ] = cell.value
-                            wb_done[byros[5:].capitalize()].append(our_row)
+                            title_byro = byros
+                            if title_byro[:4] == 'Бюро':
+                                title_byro = title_byro[5:]
+                            if len(title_byro) > 31:
+                                title_byro = title_byro[:31]
+                            wb_done[title_byro.capitalize()].append(our_row)
                 else:
                     our_row = []
                     for j, cell in enumerate(ws_web[i+1]):
@@ -322,7 +329,7 @@ class Xl_work:
             sheet[f'C{row_index}'] = self.__count_unique(
                 column=2, sheet=wb[wb.sheetnames[row_index-4]])
 
-        for i in range(1, len(wb.sheetnames)-2):
+        for i in range(1, len(wb.sheetnames)):
             sheet.cell(
                 row=4+i, column=1).hyperlink = f"#'{wb.sheetnames[i]}'!A1"
 
