@@ -141,7 +141,10 @@ class Xl_work:
         bureaus = Bureau.objects.all()
 
         for bureu in bureaus:
-            wb_web.create_sheet(bureu.title[5:].capitalize())
+            if bureu.title[:4] == 'Бюро':
+                wb_web.create_sheet(bureu.title[5:].capitalize())
+            else:
+                wb_web.create_sheet(bureu.title.capitalize())
 
         wb_web.create_sheet('Конфликты')
         wb_web.save(self.pathDone)
