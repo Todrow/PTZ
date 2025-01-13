@@ -505,7 +505,35 @@ class Xl_work:
         wb.save(self.pathDone)
         wb.close()
 
+    def __mark_finished_prog(self):
+        """Помечает серым цветом программы, в которых текущая наработка превысила продолжительность контроля
+        """
+
+        light_grey_fill = PatternFill(start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
+
+        wb = self.open_file(self.pathDone)
+
+        for each in wb.sheetnames[2:]:
+            sheet = wb[each]
+            for row in sheet.iter_rows(min_row=2, min_col=5, max_col=6):  # Столбцы E (5) и F (6)
+                cell_e = row[0]  # Ячейка в столбце E
+                cell_f = row[1]  # Ячейка в столбце F
+
+                # Проверяем, что значения в ячейках не пустые и являются числами
+                try:
+                    value_e = float(cell_e.value)
+                    value_f = float(cell_f.value)
+                except ValueError:
+                    continue  # Пропускаем строки, если значения не являются числами
+
+                # Сравниваем значения и закрашиваем ячейку F, если F > E
+                if value_f > value_e:
+                    cell_f.fill = light_grey_fill
             
+        
+        wb.save(self.pathDone)
+        wb.close()
+
 
     def start(self) -> None:
         """ Запускает весь процесс совмещения двух файлов, перед этим выполняя проверку на ошибки при добавлении исходных файлов
@@ -519,5 +547,6 @@ class Xl_work:
             self.__make_link_files()
         self.__create_sheets()
         self.__spread_on_sheets()
+        self.__mark_finished_prog()
         self.__stat()
         
