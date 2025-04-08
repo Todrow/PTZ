@@ -466,6 +466,17 @@ class Xl_work:
             ws.cell(row=1, column=1).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
             ws.cell(row=1, column=6, value='Количество тракторов в программе').font = Font(name="Times New Roman", bold=True, size=12)
             ws.cell(row=1, column=6).alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
+
+            # Color markers
+
+            # Gray
+            light_grey_fill = PatternFill(
+                start_color="D3D3D3", end_color="D3D3D3", fill_type="solid")
+            ws.cell(row=1, column=7).fill = light_grey_fill
+            ws.cell(row=1, column=8, value='- Программы, нароботавшие нужное количество часов').font = Font(
+                name="Times New Roman", bold=True, size=12)
+            ws.cell(row=1, column=8).alignment = Alignment(
+                wrap_text=True, horizontal='left', vertical='center')
             ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=5)
             
 
