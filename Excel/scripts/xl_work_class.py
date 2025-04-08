@@ -9,6 +9,7 @@ import hashlib
 from merge_files.models import ModuleSU, Bureau
 
 
+
 class Xl_work:
     """Класс для создания неотформатированной версии отчета
         обладает публичными методами:
