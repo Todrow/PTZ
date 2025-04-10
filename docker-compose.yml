@@ -1,6 +1,6 @@
 services:
   web:
-    image: nginx:latest
+    image: nginx:latest  
     container_name: django_nginx
     ports:
       - "80:80"
@@ -14,9 +14,7 @@ services:
 
   
   django:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: helix350/django-app:latest  
     container_name: django_app
     volumes:
       - ./Excel:/app
