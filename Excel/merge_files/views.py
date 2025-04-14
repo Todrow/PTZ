@@ -77,6 +77,8 @@ def index(request):
                 file2 = request.FILES['file_web']
                 ####
                 error, message = merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
+                print('ОШИБКА:', error)
+                print('Сообщение:', message)
             elif len(request.FILES) == 1:
                 file = request.FILES['file_web']
                 ####
