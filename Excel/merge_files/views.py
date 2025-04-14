@@ -4,10 +4,13 @@ from django.http import HttpResponse, JsonResponse
 
 # Python Libs
 import os
+import pika
 
 # Project classes
 from scripts.exlWrapper import ExcelWrapper
 from scripts.xl_work_class import Xl_work
+from rabbitMQ.send import Producer
+from rabbitMQ.recieve import Consumer
 
 """Views отвечает за принятие запросов, обработку данных из них и возрат ответов пользователю
 """
@@ -45,7 +48,7 @@ def index(request):
     значение ошибки. Значение ошибки формируется в функции merge_files, которая в свою очередь использует класс
     Xl_work для этого
 
-    Если запрос не поступал, то пользователю выводится стандартная страница index.html
+    Если постцпает запрос с GET, то пользователю выводится стандартная страница index.html
 
     Готовый файл отчета храниться на сервере 5 минут (300 секунд)
 
@@ -56,6 +59,7 @@ def index(request):
         _type_: _description_
     """
     global path_done
+    
     try:
         import time
         for filename in os.listdir(path_done):
@@ -64,30 +68,34 @@ def index(request):
                 os.remove(f)
     except:
         pass
-    if request.method == 'POST' and request.FILES:
-        if len(request.FILES) == 2:
-            file1 = request.FILES['file_bitrix']
+    
+    match request.method:
+        case 'POST':
+            if len(request.FILES) == 2:
+                file1 = request.FILES['file_bitrix']
+                ####
+                file2 = request.FILES['file_web']
+                ####
+                error, message = merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
+            elif len(request.FILES) == 1:
+                file = request.FILES['file_web']
+                ####
+                error, message = merge_files(
+                    None, file, path_done+request.META['HTTP_ID']+'.xlsx')
             ####
-            file2 = request.FILES['file_web']
-            ####
-            error, message = merge_files(file1, file2, path_done+request.META['HTTP_ID']+'.xlsx')
-        elif len(request.FILES) == 1:
-            file = request.FILES['file_web']
-            ####
-            error, message = merge_files(
-                None, file, path_done+request.META['HTTP_ID']+'.xlsx')
-        ####
-        try:
-            os.remove(file1)
-        except:
-            pass
-        try:
-            os.remove(file2)
-        except:
-            pass
-        return JsonResponse({"id": str(request.META['HTTP_ID']), "error": error, "message": message})
-    else:
-        return render(request, 'index.html')
+            try:
+                os.remove(file1)
+            except:
+                pass
+            try:
+                os.remove(file2)
+            except:
+                pass
+            return JsonResponse({"id": str(request.META['HTTP_ID']), "error": error, "message": message})
+        case 'GET':
+            return render(request, 'index.html')
+        
+        
     
 
 def download_file(request, id):
