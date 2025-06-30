@@ -5,16 +5,102 @@ from django.http import HttpResponse, JsonResponse
 # Python Libs
 import os
 import pika
-
-# Project classes
-from scripts.exlWrapper import ExcelWrapper
-from scripts.xl_work_class import Xl_work
-from rabbitMQ.send import Producer
-from rabbitMQ.recieve import Consumer
+from json import dumps
+import asyncio
 
 """Views отвечает за принятие запросов, обработку данных из них и возрат ответов пользователю
 """
 
+path_save = './uploads/'
+
+# Create your views here.
+
+def render_merge(request): 
+    match request.method:
+        case 'GET':
+            return render(request, 'index.html')
+        case 'POST':
+            body = RequestParser.parse(request)
+            p = Sender("merge")
+            return p.send(message="123", id="1")
+        
+def download_file(request, id):
+    match request.method:
+        case 'GET':
+            return FileTaker.get_file(path_save, id)
+        case _:
+            return None
+    
+
+class RequestParser():
+    @staticmethod
+    def parse(request) -> dict:
+        response = {
+            'path_bitrix': request.FILES['file_bitrix'] or None,
+            'path_web': request.FILES['file_web'] or None,
+            'path_done': path_save+request.META['HTTP_ID']+'.xlsx'
+        }
+        
+        return response
+        
+
+class FileTaker():
+    def get_file(path, id):
+        with open(path+id+'.xlsx', 'rb') as file:
+            response = HttpResponse(file.read())
+            response['Content-Disposition'] = 'attachment; filename=' + 'finished_report.xlsx'
+        os.remove(path+id+'.xlsx')
+        return response
+    
+class Sender():
+    def __init__(self, name):
+        self.name = name
+        credentials = pika.PlainCredentials('myuser', 'mypassword')
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host='localhost',
+                port=5672,
+                virtual_host='myvhost',  # Check if this exists
+                credentials=credentials
+            )
+        )
+        self.channel = self.connection.channel()
+        self.sends = f"{name}_sends"
+        self.responses = f"{name}_responses"
+        
+        # очередь в которую отправляются запросы
+        self.channel.queue_declare(queue=self.sends)
+        
+        # очередь из которой ждет ответ
+        self.channel.queue_declare(queue=self.responses)
+        self.channel.basic_consume(queue=self.responses, on_message_callback=self._handle_response)
+        
+        
+    def _send(self, message, id):
+        self.channel.basic_publish(exchange='',
+                                   routing_key=self.sends,
+                                   properties=pika.BasicProperties(
+                                       message_id=str(id),
+                                   ),
+                                   body=message)
+        
+        print("сообщение отправлено в очередь для обработчика")
+        
+    def _handle_response(self, ch, method, properties, body):
+        print(f'Получил ответ: {body}')
+        ch.basic_ack(delivery_tag=method.delivery_tag)  # Подтверждение
+        # self.channel.stop_consuming()   Остановка после ответа
+            
+    async def _wait_for_response(self):
+        await self.channel.start_consuming()
+        
+    def send(self, message, id):
+        self._send(message, id)
+        self._wait_for_response()
+
+        
+
+'''
 def merge_files(path_bitrix, path_web, path_done) -> (str, str):
     """Соединяет 2 загруженных файла в единый отчет, используя классы Xl_work и ExcelWrapper
 
@@ -117,3 +203,4 @@ def download_file(request, id):
         response['Content-Disposition'] = 'attachment; filename=' + 'finished_report.xlsx'
     os.remove(path_done+id+'.xlsx')
     return response
+'''

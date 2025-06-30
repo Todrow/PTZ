@@ -1,7 +1,5 @@
 import pika
 from abc import abstractmethod, ABC
-from ..scripts.xl_work_class import Xl_work
-from ..scripts.exlWrapper import ExcelWrapper
 from json import dumps
 
 
@@ -35,17 +33,17 @@ class Consumer():
     def _callback(self, ch, method, properties, body):
         print(f'Обработчик получил запрос: {body}')
         
-        id = properties.message_id
+        """id = properties.message_id
         job = body.decode('utf-8')['job']
         files = body.decode('utf-8')['files']
         error, message = WorkerFactory.chooseWorker(job, files, id).format()
         
-        
+        """
         # Отправка ответа
         self.channel.basic_publish(
             exchange='',
             routing_key=self.responses,
-            body=f"Ответ от {self.name}: {body}"
+            body=f"Ответ от {body}"
         )
         ch.basic_ack(delivery_tag=method.delivery_tag)  # Подтверждение
         

@@ -7,6 +7,6 @@ from . import views
 """
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.render_merge, name='index'),
     path('download/<id>', views.download_file, name='download')
 ]
